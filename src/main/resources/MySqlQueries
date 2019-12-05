@@ -1,0 +1,115 @@
+USE mysql;
+
+CREATE DATABASE kadictionary;
+
+USE kadictionary;
+
+# Table creating queries
+CREATE TABLE kyrgyz_words
+(
+    wordID      INT           NOT NULL AUTO_INCREMENT,
+    word        NVARCHAR(200) NOT NULL,
+    correctness INT DEFAULT 0,
+    CONSTRAINT PK_Kyrgyz_Word_ID PRIMARY KEY (wordID)
+);
+
+CREATE TABLE kyrgyz_word_descriptions
+(
+    descriptionID INT            NOT NULL AUTO_INCREMENT,
+    description   NVARCHAR(1000) NOT NULL,
+    correctness   INT DEFAULT 0,
+    _wordID       INT            NOT NULL UNIQUE,
+    CONSTRAINT PK_Kyrgyz_Word_Description_ID PRIMARY KEY (descriptionID),
+    CONSTRAINT FK_Description_To_Kyrgyz_Word_ID FOREIGN KEY (_wordID) REFERENCES kadictionary.kyrgyz_words (wordID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE arabic_words
+(
+    wordID      INT           NOT NULL AUTO_INCREMENT,
+    word        NVARCHAR(200) NOT NULL,
+    correctness INT DEFAULT 0,
+    CONSTRAINT PK_Arabic_Word_ID PRIMARY KEY (wordID)
+);
+
+CREATE TABLE arabic_word_descriptions
+(
+    descriptionID INT            NOT NULL AUTO_INCREMENT,
+    description   NVARCHAR(1000) NOT NULL,
+    correctness   INT DEFAULT 0,
+    _wordID       INT            NOT NULL UNIQUE,
+    CONSTRAINT PK_Arabic_Description_ID PRIMARY KEY (descriptionID),
+    CONSTRAINT FK_Description_To_Arabic_Word_ID FOREIGN KEY (_wordID) REFERENCES kadictionary.arabic_words (wordID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE kyrgyz_arabic_word_matcher
+(
+    matchID       INT NOT NULL AUTO_INCREMENT,
+    _kyrgyzWordID INT NOT NULL,
+    _arabicWordID INT NOT NULL,
+    correctness   INT DEFAULT 0,
+    CONSTRAINT PK_Kyrgyz_Arabic_Matcher_ID PRIMARY KEY (matchID),
+    CONSTRAINT FK_Matcher_To_Kyrgyz_Word_ID FOREIGN KEY (_kyrgyzWordID) REFERENCES kadictionary.kyrgyz_words (wordID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT FK_Matcher_To_Arabic_Word_ID FOREIGN KEY (_arabicWordID) REFERENCES kadictionary.arabic_words (wordID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT UNIQUE (_kyrgyzWordID, _arabicWordID)
+);
+
+# Table dropping queries
+DROP TABLE kyrgyz_arabic_word_matcher;
+DROP TABLE kyrgyz_word_descriptions;
+DROP TABLE arabic_word_descriptions;
+DROP TABLE kyrgyz_words;
+DROP TABLE arabic_words;
+SHOW TABLES;
+
+# Data inserting queries
+INSERT INTO kyrgyz_words (word) VALUE ('китеп');
+INSERT INTO kyrgyz_word_descriptions (description, _wordID)
+VALUES ('окуу үчүн даярдалган, барактардын топтомунан турган кандайдыр бир типографиялык басылма', 1)
+
+# Data selecting queries
+SELECT *
+FROM kyrgyz_words;
+SELECT *
+FROM kyrgyz_word_descriptions;
+SELECT *
+FROM arabic_words;
+SELECT *
+FROM arabic_word_descriptions;
+SELECT *
+FROM kyrgyz_arabic_word_matcher;
+
+# Data manipulating stored procedures
+CREATE PROCEDURE getAllKyrgyzWords()
+BEGIN
+    SELECT wordID, word, description, kd.correctness
+    FROM kyrgyz_words kw
+             JOIN kyrgyz_word_descriptions kd on kw.wordID = kd._wordID;
+END;
+
+CREATE PROCEDURE getAllArabicWords()
+BEGIN
+    SELECT wordID, word, description, ad.correctness
+    FROM arabic_words aw
+             JOIN arabic_word_descriptions ad on aw.wordID = ad._wordID;
+END;
+
+CREATE PROCEDURE searchKyrgyzWord(beginning NVARCHAR(200))
+BEGIN
+    SELECT *
+    FROM kyrgyz_words
+    WHERE word LIKE CONCAT(beginning, '%')
+    ORDER BY word;
+END;
+
+# Driving code
+CALL getAllKyrgyzWordsWithDescriptionAndCorrectness();
+CALL searchKyrgyzWord('ки');
+SHOW PROCEDURE STATUS;

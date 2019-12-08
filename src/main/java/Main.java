@@ -19,6 +19,7 @@ public class Main extends Application {
         MainController controller = loader.getController();
         controller.setMySQLAccess(new MySQLAccess());
 
+
         primaryStage.setTitle(APP_NAME);
         primaryStage.setScene(new Scene(root, 535, 205));
         primaryStage.show();
@@ -26,7 +27,5 @@ public class Main extends Application {
 
     public static void main(String[] args) throws Exception {
         launch(args);
-//        MySQLAccess access = new MySQLAccess();
-//        access.getAllKyrgyzWords();
     }
 }

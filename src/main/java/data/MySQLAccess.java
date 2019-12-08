@@ -19,40 +19,64 @@ public class MySQLAccess {
     private ResultSet resultSet = null;
 
     private Language language = Language.KYRGYZ;
-    private List<Word> words;
 
     public void setLanguage(Language language) {
         this.language = language;
     }
 
-    public List<Word> getWords() {
-        return words;
-    }
-
-    public void loadAllWords() throws Exception {
+    public List<Word> getAllWords() throws Exception {
+        List<Word> words = new ArrayList<>();
         try {
             openConnection();
             String query = "CALL getAll" + language + "Words();";
             resultSet = statement.executeQuery(query);
-            parseWords();
+            parseWords(words);
         } finally {
             close();
         }
+        return words;
     }
 
-    public void searchWord(String substring) throws Exception {
+    public List<Word> searchWord(String substring) throws Exception {
+        List<Word> words = new ArrayList<>();
         try {
             openConnection();
             String query = "CALL search" + language + "Word('" + substring + "');";
             resultSet = statement.executeQuery(query);
-            parseWords();
+            parseWords(words);
         } finally {
             close();
         }
+        return words;
     }
 
-    private void parseWords() throws SQLException {
-        words = new ArrayList<>();
+    public List<String> getDescriptionByWordId(int wordId) throws Exception {
+        List<String> result = new ArrayList<>();
+        try {
+            openConnection();
+            String query = "CALL get" + language + "WordDescriptionsByWordId(" + wordId + ");";
+            resultSet = statement.executeQuery(query);
+            parseDescriptions(result);
+        } finally {
+            close();
+        }
+        return result;
+    }
+
+    public List<String> getTranslationByWordId(int wordId, Language preferedLang) throws Exception {
+        List<String> result = new ArrayList<>();
+        try {
+            openConnection();
+            String query = "CALL get" + language + "Word" + preferedLang + "TranslationsByWordId(" + wordId + ");";
+            resultSet = statement.executeQuery(query);
+            parseTranslations(result);
+        } finally {
+            close();
+        }
+        return result;
+    }
+
+    private void parseWords(List<Word> words) throws SQLException {
         if (resultSet != null) {
             while (resultSet.next()) {
                 int wordId = resultSet.getInt("wordID");
@@ -60,6 +84,24 @@ public class MySQLAccess {
                 int correctness = resultSet.getInt("correctness");
                 Word kaWord = new KAWord(wordId, word, correctness, language);
                 words.add(kaWord);
+            }
+        }
+    }
+
+    private void parseDescriptions(List<String> list) throws SQLException {
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                String string = resultSet.getString("description");
+                list.add(string);
+            }
+        }
+    }
+
+    private void parseTranslations(List<String> list) throws SQLException {
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                String translation = resultSet.getString("translation");
+                list.add(translation);
             }
         }
     }

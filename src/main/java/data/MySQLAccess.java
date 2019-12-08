@@ -6,7 +6,9 @@ import data.model.Word;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MySQLAccess {
     private static final String jdbcDriver = "com.mysql.cj.jdbc.Driver";
@@ -21,6 +23,7 @@ public class MySQLAccess {
     private Language language = Language.KYRGYZ;
 
     public void setLanguage(Language language) {
+        System.out.println("New language: " + language);
         this.language = language;
     }
 
@@ -50,6 +53,15 @@ public class MySQLAccess {
         return words;
     }
 
+    public Map<Language, List<String>> getTranslationsByWordId(int wordId) throws Exception {
+        Map<Language, List<String>> translations = new HashMap<>();
+        System.out.println("Translate to:  " + language.getLanguagesExceptSelf());
+        for (Language lan : language.getLanguagesExceptSelf()) {
+            translations.put(lan, getTranslationsByWordId(wordId, lan));
+        }
+        return translations;
+    }
+
     public List<String> getDescriptionByWordId(int wordId) throws Exception {
         List<String> result = new ArrayList<>();
         try {
@@ -63,11 +75,12 @@ public class MySQLAccess {
         return result;
     }
 
-    public List<String> getTranslationByWordId(int wordId, Language preferedLang) throws Exception {
+    private List<String> getTranslationsByWordId(int wordId, Language preferedLang) throws Exception {
         List<String> result = new ArrayList<>();
         try {
             openConnection();
             String query = "CALL get" + language + "Word" + preferedLang + "TranslationsByWordId(" + wordId + ");";
+            System.out.println("Translation query: " + query);
             resultSet = statement.executeQuery(query);
             parseTranslations(result);
         } finally {

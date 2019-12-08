@@ -12,6 +12,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.util.List;
+import java.util.Map;
+
+import static utility.CommonUtility.formatLanguageTranslations;
+import static utility.CommonUtility.formatListString;
 
 public class MainController {
     @FXML private TextField textFieldSearch;
@@ -93,6 +97,7 @@ public class MainController {
                 Word word = words.get(newValue.intValue());
                 labelWord.setText(word.getWord());
                 showDescriptions(word.getId());
+                showTranslations(word.getId());
                 System.out.println("Word '" + word + "' is selected");
             } catch (ArrayIndexOutOfBoundsException ignored) {
                 listViewWords.getSelectionModel().clearSelection();
@@ -113,8 +118,9 @@ public class MainController {
         private void showTranslations(int wordId) {
             try {
                 if (mySQLAccess != null) {
-                    List<String> translations = mySQLAccess.getTranslationByWordId(wordId, Language.ARABIC);
-                    labelArabicTranslation.setText(formatListString(translations));
+                    Map<Language, List<String>> translations = mySQLAccess.getTranslationsByWordId(wordId);
+                    System.out.println(translations.toString());
+                    labelArabicTranslation.setText(formatLanguageTranslations(translations));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -122,13 +128,5 @@ public class MainController {
         }
     }
 
-    private static String formatListString(List<String> words) {
-        StringBuilder sb = new StringBuilder();
-        for (String st : words) {
-            sb.append("- ");
-            sb.append(st);
-            sb.append('\n');
-        }
-        return sb.toString();
-    }
+
 }

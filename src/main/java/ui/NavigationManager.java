@@ -38,4 +38,15 @@ public class NavigationManager {
             Logger.getLogger(NavigationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public void showSignUp() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/main.fxml"));
+            scene.setRoot(loader.load());
+            MainController controller = loader.getController();
+            controller.init(WordsRepository.getInstance());
+        } catch (IOException ex) {
+            Logger.getLogger(NavigationManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

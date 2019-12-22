@@ -11,9 +11,18 @@ public abstract class BaseRepository {
     private static final String connectionString = "jdbc:mysql://localhost/kadictionary?"
         + "user=javauser&password=&useSSL=false&useUnicode=yes&characterEncoding=UTF-8";
 
-    private Connection connect = null;
+    protected Connection connect = null;
     protected Statement statement = null;
     protected ResultSet resultSet = null;
+
+    protected void runQuery(Runnable block) throws Exception {
+        try {
+            openConnection();
+            block.run();
+        } finally {
+            close();
+        }
+    }
 
     protected void openConnection() throws Exception {
         Class.forName(jdbcDriver);

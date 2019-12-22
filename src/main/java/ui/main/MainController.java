@@ -1,17 +1,17 @@
 package ui.main;
 
-import data.repositories.WordsRepository;
 import data.model.Language;
 import data.model.Word;
+import data.repositories.WordsRepository;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.AccessibleAction;
 import javafx.scene.control.*;
+import base.BaseController;
+import ui.Main;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ import java.util.Map;
 import static utility.CommonUtility.formatLanguageTranslations;
 import static utility.CommonUtility.formatListString;
 
-public class MainController {
+public class MainController extends BaseController {
     @FXML private TextField textFieldSearch;
     @FXML private MenuButton menuButtonLanguage;
     @FXML private ListView<Word> listViewWords;
@@ -31,7 +31,7 @@ public class MainController {
     private WordsRepository wordsRepository;
     private OnWordChosenListener onWordChosenListener = new OnWordChosenListener();
 
-    public void setWordsRepository(WordsRepository wordsRepository) {
+    public void init(WordsRepository wordsRepository) {
         this.wordsRepository = wordsRepository;
         listViewWords.setItems(words);
         loadAllWords();
@@ -65,7 +65,7 @@ public class MainController {
 
     private void changeLanguage(Language language) {
         if (wordsRepository != null) {
-            wordsRepository.setLanguage(language);
+            wordsRepository.changeLanguage(language);
             loadAllWords();
         }
     }
@@ -73,6 +73,14 @@ public class MainController {
     @FXML void onSearchPressed(ActionEvent event) {
         String word = textFieldSearch.getText();
         searchWords(word);
+    }
+
+    @FXML void login(ActionEvent event) {
+        Main.getNavigationManager().showLoginScreen();
+    }
+
+    @FXML void quit(ActionEvent event) {
+
     }
 
     private void loadAllWords() {

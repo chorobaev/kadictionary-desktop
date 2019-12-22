@@ -1,5 +1,6 @@
 package data.repositories;
 
+import base.BaseRepository;
 import data.model.KAWord;
 import data.model.Language;
 import data.model.Word;
@@ -10,11 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WordsRepository {
+public class WordsRepository extends BaseRepository {
     private static WordsRepository instance;
-    private static final String jdbcDriver = "com.mysql.cj.jdbc.Driver";
-    private static final String connectionString = "jdbc:mysql://localhost/kadictionary?"
-        + "user=javauser&password=&useSSL=false&useUnicode=yes&characterEncoding=UTF-8";
 
     public static WordsRepository getInstance() {
         if (instance == null) {
@@ -23,16 +21,12 @@ public class WordsRepository {
         return instance;
     }
 
-    private Connection connect = null;
-    private Statement statement = null;
-    private ResultSet resultSet = null;
-
     private Language language = Language.KYRGYZ;
 
     private WordsRepository() {
     }
 
-    public void setLanguage(Language language) {
+    public void changeLanguage(Language language) {
         System.out.println("New language: " + language);
         this.language = language;
     }
@@ -129,24 +123,4 @@ public class WordsRepository {
         }
     }
 
-    private void openConnection() throws Exception {
-        Class.forName(jdbcDriver);
-        connect = DriverManager.getConnection(connectionString);
-        statement = connect.createStatement();
-    }
-
-    private void close() {
-        try {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-            if (statement != null) {
-                statement.close();
-            }
-            if (connect != null) {
-                connect.close();
-            }
-        } catch (Exception ignored) {
-        }
-    }
 }

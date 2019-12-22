@@ -7,8 +7,11 @@ import data.repositories.AuthRepository;
 import data.repositories.WordsRepository;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import ui.login.LoginController;
 import ui.main.MainController;
+import ui.signup.SignUpController;
 
 public class NavigationManager {
     private Scene scene;
@@ -17,7 +20,7 @@ public class NavigationManager {
         this.scene = scene;
     }
 
-    public void showLoginScreen() {
+    public void showSignInScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/login.fxml"));
             scene.setRoot(loader.load());
@@ -41,12 +44,21 @@ public class NavigationManager {
 
     public void showSignUp() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/main.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/signup.fxml"));
             scene.setRoot(loader.load());
-            MainController controller = loader.getController();
-            controller.init(WordsRepository.getInstance());
+            SignUpController controller = loader.getController();
+            controller.init(AuthRepository.getInstance());
         } catch (IOException ex) {
             Logger.getLogger(NavigationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void showMessage(String msg) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setContentText(msg);
+        dialog.showAndWait()
+            .filter(response -> response == ButtonType.OK)
+            .ifPresent(response -> {
+            });
     }
 }

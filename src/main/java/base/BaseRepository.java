@@ -15,15 +15,6 @@ public abstract class BaseRepository {
     protected Statement statement = null;
     protected ResultSet resultSet = null;
 
-    protected void runQuery(Runnable block) throws Exception {
-        try {
-            openConnection();
-            block.run();
-        } finally {
-            close();
-        }
-    }
-
     protected void openConnection() throws Exception {
         Class.forName(jdbcDriver);
         connect = DriverManager.getConnection(connectionString);

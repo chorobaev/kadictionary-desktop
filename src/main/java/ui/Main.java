@@ -21,7 +21,7 @@ public class Main extends Application {
         Scene scene = new Scene(new StackPane(), 535, 205);
 
         navigationManager = new NavigationManager(scene);
-        navigationManager.showLoginScreen();
+        navigationManager.showSignInScreen();
 
         primaryStage.setTitle(APP_NAME);
         primaryStage.setScene(scene);

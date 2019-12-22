@@ -28,4 +28,13 @@ public class User {
     public String getEmail() {
         return email;
     }
+
+    @Override public String toString() {
+        return "User{" +
+            "userId=" + userId +
+            ", name='" + name + '\'' +
+            ", surname='" + surname + '\'' +
+            ", email='" + email + '\'' +
+            '}';
+    }
 }

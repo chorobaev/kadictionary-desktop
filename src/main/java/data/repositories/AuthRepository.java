@@ -20,10 +20,12 @@ public class AuthRepository extends BaseRepository {
     }
 
     public User login(String email, String password) throws Exception {
-        User user = null;
+        User user;
         try {
+            openConnection();
             @SuppressWarnings("SqlResolve")
-            String query = "CALL getUserByEmailAndPassword(" + email + ", " + password + ");";
+            String query = "CALL getUserByEmailAndPassword('" + email + "', '" + password + "');";
+            System.out.println("Login query: " + query);
             resultSet = statement.executeQuery(query);
             user = parseUser();
         } finally {
@@ -34,12 +36,17 @@ public class AuthRepository extends BaseRepository {
     }
 
     private User parseUser() throws SQLException {
-        return new User(
-            resultSet.getInt("userID"),
-            resultSet.getString("name"),
-            resultSet.getString("surname"),
-            resultSet.getString("email")
-        );
+        User user = null;
+        if (resultSet != null && resultSet.next()) {
+            user = new User(
+                resultSet.getInt("userID"),
+                resultSet.getString("name"),
+                resultSet.getString("surname"),
+                resultSet.getString("email")
+            );
+        }
+        System.out.println("User: " + user);
+        return user;
     }
 
     public User signUp(String name, String surname, String email, String password) throws Exception {

@@ -5,13 +5,12 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -45,19 +44,7 @@
                         <Insets right="8.0" />
                      </HBox.margin>
                   </TextField>
-                      <RadioButton fx:id="radioBtnKyrgyz" minWidth="-Infinity" mnemonicParsing="false" onAction="#onLanguageChanged" prefWidth="100.0" selected="true" text="Кыргыз" HBox.hgrow="SOMETIMES">
-                          <toggleGroup>
-                              <ToggleGroup fx:id="toggleGroupLanguages" />
-                          </toggleGroup>
-                     <HBox.margin>
-                        <Insets left="8.0" right="8.0" />
-                     </HBox.margin>
-                      </RadioButton>
-                      <RadioButton fx:id="radioBtnArabic" minWidth="-Infinity" mnemonicParsing="false" onAction="#onLanguageChanged" prefWidth="100.0" text="Арап" toggleGroup="$toggleGroupLanguages">
-                     <HBox.margin>
-                        <Insets left="8.0" right="8.0" />
-                     </HBox.margin>
-                  </RadioButton>
+                  <MenuButton fx:id="menuButtonLanguage" minWidth="150.0" mnemonicParsing="false" text="Language" />
                </children>
             </HBox>
             </children>

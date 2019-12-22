@@ -6,9 +6,11 @@ import data.model.Word;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.AccessibleAction;
 import javafx.scene.control.*;
 
 import java.util.List;
@@ -19,9 +21,7 @@ import static utility.CommonUtility.formatListString;
 
 public class MainController {
     @FXML private TextField textFieldSearch;
-    @FXML private RadioButton radioBtnKyrgyz;
-    @FXML private ToggleGroup toggleGroupLanguages;
-    @FXML private RadioButton radioBtnArabic;
+    @FXML private MenuButton menuButtonLanguage;
     @FXML private ListView<Word> listViewWords;
     @FXML private Label labelWord;
     @FXML private Label labelDescription;
@@ -38,22 +38,35 @@ public class MainController {
     }
 
     @FXML void initialize() {
-        radioBtnKyrgyz.setUserData(Language.KYRGYZ);
-        radioBtnArabic.setUserData(Language.ARABIC);
+        initLanguageMenuButtons();
+        initWordsListView();
+    }
+
+    private void initLanguageMenuButtons() {
+        ObservableList<MenuItem> menuItems = menuButtonLanguage.getItems();
+        Language.getMenuItemsInKyrgyz().forEach(menuItem -> {
+            menuItem.setOnAction(action -> {
+                MenuItem menu = (MenuItem) action.getSource();
+                changeLanguage((Language) menu.getUserData());
+                menuButtonLanguage.setText(menu.getText());
+            });
+            menuItems.add(menuItem);
+        });
+        if (!menuItems.isEmpty()) {
+            menuItems.get(0).fire();
+        }
+    }
+
+    private void initWordsListView() {
         listViewWords.getSelectionModel()
             .selectedIndexProperty()
             .addListener(onWordChosenListener);
     }
 
-    @FXML void onLanguageChanged(ActionEvent event) {
-        changeLanguage();
-        loadAllWords();
-    }
-
-    private void changeLanguage() {
+    private void changeLanguage(Language language) {
         if (wordsRepository != null) {
-            Language language = (Language) toggleGroupLanguages.getSelectedToggle().getUserData();
             wordsRepository.setLanguage(language);
+            loadAllWords();
         }
     }
 
@@ -67,7 +80,10 @@ public class MainController {
             this.words.clear();
             if (wordsRepository != null) {
                 List<Word> words = wordsRepository.getAllWords();
-                if (words != null) this.words.addAll(words);
+                if (words != null) {
+                    this.words.addAll(words);
+                    if (!words.isEmpty()) listViewWords.getSelectionModel().select(0);
+                }
                 System.out.println("Words: " + words);
             }
         } catch (Exception ex) {

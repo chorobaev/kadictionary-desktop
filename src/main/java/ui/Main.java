@@ -11,19 +11,13 @@ import static utility.AppConstant.APP_NAME;
 
 public class Main extends Application {
 
-    private static NavigationManager navigationManager;
-
-    public static NavigationManager getNavigationManager() {
-        return navigationManager;
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
 
         Scene scene = new Scene(new StackPane(), 535, 205);
 
-        navigationManager = new NavigationManager(scene, AuthRepository.getInstance(), WordsRepository.getInstance());
-        navigationManager.showMainView();
+        Navigation navigation = new NavigationManager(scene, AuthRepository.getInstance(), WordsRepository.getInstance());
+        navigation.showMainView();
 
         primaryStage.setTitle(APP_NAME);
         primaryStage.setScene(scene);

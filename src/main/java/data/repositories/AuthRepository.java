@@ -19,7 +19,7 @@ public class AuthRepository extends BaseRepository {
     private AuthRepository() {
     }
 
-    public User login(String email, String password) throws Exception {
+    public User singIn(String email, String password) throws Exception {
         User user;
         try {
             openConnection();
@@ -60,8 +60,8 @@ public class AuthRepository extends BaseRepository {
             statement.setString(3, name);
             statement.setString(4, surname);
 
-            boolean success = statement.execute();
-            if (success) user = login(email, password);
+            statement.execute();
+            user = singIn(email, password);
         } finally {
             close();
         }

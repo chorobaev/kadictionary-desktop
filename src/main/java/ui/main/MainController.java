@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import base.BaseController;
 import ui.Main;
+import ui.Navigation;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,8 @@ import static utility.CommonUtility.formatLanguageTranslations;
 import static utility.CommonUtility.formatListString;
 
 public class MainController extends BaseController {
+    private Navigation navigation;
+
     @FXML private TextField textFieldSearch;
     @FXML private MenuButton menuButtonLanguage;
     @FXML private ListView<Word> listViewWords;
@@ -31,7 +34,8 @@ public class MainController extends BaseController {
     private WordsRepository wordsRepository;
     private OnWordChosenListener onWordChosenListener = new OnWordChosenListener();
 
-    public void init(WordsRepository wordsRepository) {
+    public void init(Navigation navigation, WordsRepository wordsRepository) {
+        this.navigation = navigation;
         this.wordsRepository = wordsRepository;
         listViewWords.setItems(words);
         loadAllWords();
@@ -76,7 +80,7 @@ public class MainController extends BaseController {
     }
 
     @FXML void login(ActionEvent event) {
-        Main.getNavigationManager().showAuthScreen();
+        navigation.showAuthDialog();
     }
 
     @FXML void quit(ActionEvent event) {

@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class NavigationManager {
+public class NavigationManager implements Navigation {
     private final Scene scene;
     private final WordsRepository wordsRepository;
     private final AuthRepository authRepository;
@@ -26,8 +26,8 @@ public class NavigationManager {
         this.wordsRepository = wordsRepository;
     }
 
-    public void showAuthScreen() {
-        AuthenticationDialog.show(authRepository).ifPresent(user -> {
+    public void showAuthDialog() {
+        AuthenticationDialog.show(this, authRepository).ifPresent(user -> {
             System.out.println("Authorized user: " + user);
         });
     }
@@ -37,7 +37,7 @@ public class NavigationManager {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/main.fxml"));
             scene.setRoot(loader.load());
             MainController controller = loader.getController();
-            controller.init(wordsRepository);
+            controller.init(this, wordsRepository);
         } catch (IOException ex) {
             Logger.getLogger(NavigationManager.class.getName()).log(Level.SEVERE, null, ex);
         }

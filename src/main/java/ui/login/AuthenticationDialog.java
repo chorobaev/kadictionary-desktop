@@ -8,22 +8,25 @@ import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.stage.Modality;
+import ui.Navigation;
 
 import java.util.Optional;
 
 public class AuthenticationDialog extends Dialog<User> implements AuthDialogControl {
-    private AuthRepository authRepository;
+    private final AuthRepository authRepository;
+    private final Navigation navigation;
     private User user;
     private OnAuthorizedListener authorizedListener = newUser -> {
         this.user = newUser;
         setResult(user);
     };
 
-    public static Optional<User> show(AuthRepository authRepository) {
-        return new AuthenticationDialog(authRepository).showAndWait();
+    public static Optional<User> show(Navigation navigation, AuthRepository authRepository) {
+        return new AuthenticationDialog(navigation, authRepository).showAndWait();
     }
 
-    private AuthenticationDialog(AuthRepository authRepository) {
+    private AuthenticationDialog(Navigation navigation, AuthRepository authRepository) {
+        this.navigation = navigation;
         this.authRepository = authRepository;
         initView();
     }
@@ -43,11 +46,12 @@ public class AuthenticationDialog extends Dialog<User> implements AuthDialogCont
 
     @Override
     public void goSignInScreen() {
+        setTitle("Кирүү");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/login.fxml"));
             Parent parent = loader.load();
-            LoginController controller = loader.getController();
-            controller.init(authRepository, authorizedListener, this);
+            SingInController controller = loader.getController();
+            controller.init(navigation, authRepository, authorizedListener, this);
             getDialogPane().setContent(parent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -56,11 +60,12 @@ public class AuthenticationDialog extends Dialog<User> implements AuthDialogCont
 
     @Override
     public void goSignUpScreen() {
+        setTitle("Катталуу");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/signup.fxml"));
             Parent parent = loader.load();
             SignUpController controller = loader.getController();
-            controller.init(authRepository, authorizedListener, this);
+            controller.init(navigation, authRepository, authorizedListener, this);
             getDialogPane().setContent(parent);
         } catch (Exception ex) {
             ex.printStackTrace();

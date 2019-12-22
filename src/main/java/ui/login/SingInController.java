@@ -9,9 +9,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import base.BaseController;
-import ui.Main;
+import ui.Navigation;
 
-public class LoginController extends BaseController {
+public class SingInController extends BaseController {
+    private Navigation navigation;
     private AuthRepository authRepository;
     private OnAuthorizedListener authorizedListener;
     private AuthDialogControl authDialogControl;
@@ -23,16 +24,23 @@ public class LoginController extends BaseController {
     @FXML void signIn(ActionEvent event) {
         if (authRepository != null) {
             try {
-                User user = authRepository.login(textFieldEmail.getText(), textFieldPassword.getText());
+                User user = authRepository.singIn(textFieldEmail.getText(), textFieldPassword.getText());
                 if (user != null) {
                     authorizedListener.onAuthorized(user);
+                } else {
+                    showIncorrectMsg();
                 }
             } catch (Exception ex) {
-                // TODO: show incorrect password msg
-                System.out.println("Incorrect email or password!");
+                showIncorrectMsg();
                 System.err.println(ex.getLocalizedMessage());
                 ex.printStackTrace();
             }
+        }
+    }
+
+    private void showIncorrectMsg() {
+        if (navigation != null) {
+            navigation.showMessage("Incorrect email or password!");
         }
     }
 
@@ -46,7 +54,13 @@ public class LoginController extends BaseController {
         StackPane.setAlignment(parentVBox, Pos.CENTER);
     }
 
-    public void init(AuthRepository authRepository, OnAuthorizedListener listener, AuthDialogControl authDialogControl) {
+    public void init(
+        Navigation navigation,
+        AuthRepository authRepository,
+        OnAuthorizedListener listener,
+        AuthDialogControl authDialogControl
+    ) {
+        this.navigation = navigation;
         this.authRepository = authRepository;
         this.authorizedListener = listener;
         this.authDialogControl = authDialogControl;

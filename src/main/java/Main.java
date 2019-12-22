@@ -1,5 +1,4 @@
-import data.MySQLAccess;
-import data.model.Language;
+import data.repositories.WordsRepository;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,8 +17,7 @@ public class Main extends Application {
         Parent root = loader.load();
 
         MainController controller = loader.getController();
-        controller.setMySQLAccess(new MySQLAccess());
-
+        controller.setWordsRepository(WordsRepository.getInstance());
 
         primaryStage.setTitle(APP_NAME);
         primaryStage.setScene(new Scene(root, 535, 205));

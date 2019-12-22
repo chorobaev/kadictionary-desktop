@@ -1,6 +1,6 @@
 package ui.main;
 
-import data.MySQLAccess;
+import data.repositories.WordsRepository;
 import data.model.Language;
 import data.model.Word;
 import javafx.beans.value.ChangeListener;
@@ -28,23 +28,21 @@ public class MainController {
     @FXML private Label labelArabicTranslation;
 
     private final ObservableList<Word> words = FXCollections.observableArrayList();
-    private MySQLAccess mySQLAccess;
-    private OnWordChosenListener onWordChosenListener;
+    private WordsRepository wordsRepository;
+    private OnWordChosenListener onWordChosenListener = new OnWordChosenListener();
 
-    public void setMySQLAccess(MySQLAccess mySQLAccess) {
-        this.mySQLAccess = mySQLAccess;
+    public void setWordsRepository(WordsRepository wordsRepository) {
+        this.wordsRepository = wordsRepository;
         listViewWords.setItems(words);
         loadAllWords();
-    }
-
-    public void setOnWordChosenListener(ChangeListener<Number> listener) {
-
     }
 
     @FXML void initialize() {
         radioBtnKyrgyz.setUserData(Language.KYRGYZ);
         radioBtnArabic.setUserData(Language.ARABIC);
-        listViewWords.getSelectionModel().selectedIndexProperty().addListener(new OnWordChosenListener());
+        listViewWords.getSelectionModel()
+            .selectedIndexProperty()
+            .addListener(onWordChosenListener);
     }
 
     @FXML void onLanguageChanged(ActionEvent event) {
@@ -53,9 +51,9 @@ public class MainController {
     }
 
     private void changeLanguage() {
-        if (mySQLAccess != null) {
+        if (wordsRepository != null) {
             Language language = (Language) toggleGroupLanguages.getSelectedToggle().getUserData();
-            mySQLAccess.setLanguage(language);
+            wordsRepository.setLanguage(language);
         }
     }
 
@@ -67,8 +65,8 @@ public class MainController {
     private void loadAllWords() {
         try {
             this.words.clear();
-            if (mySQLAccess != null) {
-                List<Word> words = mySQLAccess.getAllWords();
+            if (wordsRepository != null) {
+                List<Word> words = wordsRepository.getAllWords();
                 if (words != null) this.words.addAll(words);
                 System.out.println("Words: " + words);
             }
@@ -80,8 +78,8 @@ public class MainController {
     private void searchWords(String word) {
         try {
             this.words.clear();
-            if (mySQLAccess != null) {
-                List<Word> words = mySQLAccess.searchWord(word);
+            if (wordsRepository != null) {
+                List<Word> words = wordsRepository.searchWord(word);
                 if (word != null) this.words.addAll(words);
             }
         } catch (Exception ex) {
@@ -106,8 +104,8 @@ public class MainController {
 
         private void showDescriptions(int wordId) {
             try {
-                if (mySQLAccess != null) {
-                    List<String> descriptions = mySQLAccess.getDescriptionByWordId(wordId);
+                if (wordsRepository != null) {
+                    List<String> descriptions = wordsRepository.getDescriptionByWordId(wordId);
                     labelDescription.setText(formatListString(descriptions));
                 }
             } catch (Exception ex) {
@@ -117,8 +115,8 @@ public class MainController {
 
         private void showTranslations(int wordId) {
             try {
-                if (mySQLAccess != null) {
-                    Map<Language, List<String>> translations = mySQLAccess.getTranslationsByWordId(wordId);
+                if (wordsRepository != null) {
+                    Map<Language, List<String>> translations = wordsRepository.getTranslationsByWordId(wordId);
                     System.out.println(translations.toString());
                     labelArabicTranslation.setText(formatLanguageTranslations(translations));
                 }
@@ -127,6 +125,4 @@ public class MainController {
             }
         }
     }
-
-
 }

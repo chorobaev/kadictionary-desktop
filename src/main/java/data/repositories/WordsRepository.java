@@ -1,4 +1,4 @@
-package data;
+package data.repositories;
 
 import data.model.KAWord;
 import data.model.Language;
@@ -10,17 +10,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MySQLAccess {
+public class WordsRepository {
+    private static WordsRepository instance;
     private static final String jdbcDriver = "com.mysql.cj.jdbc.Driver";
     private static final String connectionString = "jdbc:mysql://localhost/kadictionary?"
         + "user=javauser&password=&useSSL=false&useUnicode=yes&characterEncoding=UTF-8";
 
+    public static WordsRepository getInstance() {
+        if (instance == null) {
+            instance = new WordsRepository();
+        }
+        return instance;
+    }
+
     private Connection connect = null;
     private Statement statement = null;
-    private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
 
     private Language language = Language.KYRGYZ;
+
+    private WordsRepository() {
+    }
 
     public void setLanguage(Language language) {
         System.out.println("New language: " + language);
@@ -137,55 +147,6 @@ public class MySQLAccess {
                 connect.close();
             }
         } catch (Exception ignored) {
-        }
-    }
-
-    public void readDataBase() throws Exception {
-        try {
-            Class.forName(jdbcDriver);
-            // Setup the connection with the DB
-            connect = DriverManager.getConnection(connectionString);
-
-            // Statements allow to issue SQL queries to the database
-            statement = connect.createStatement();
-            // Result set get the result of the SQL query
-            resultSet = statement
-                .executeQuery("select * from kadictionary.kyrgyz_words");
-
-            // PreparedStatements can use variables and are more efficient
-            preparedStatement = connect
-                .prepareStatement("insert into  kadictionary.kyrgyz_words values (default, ?, default)");
-            // "myuser, webpage, datum, summary, COMMENTS from feedback.comments");
-            // Parameters start with 1
-            preparedStatement.setString(1, "жаңгак");
-            preparedStatement.executeUpdate();
-
-            preparedStatement = connect
-                .prepareStatement("SELECT * from kadictionary.kyrgyz_words");
-            resultSet = preparedStatement.executeQuery();
-
-//            // Remove again the insert comment
-//            preparedStatement = connect
-//            .prepareStatement("delete from feedback.comments where myuser= ? ; ");
-//            preparedStatement.setString(1, "Test");
-//            preparedStatement.executeUpdate();
-//
-//            resultSet = statement
-//            .executeQuery("select * from feedback.comments");
-//            writeMetaData(resultSet);
-
-        } finally {
-            close();
-        }
-
-    }
-
-    private void writeMetaData(ResultSet resultSet) throws SQLException {
-        System.out.println("The columns in the table are: ");
-
-        System.out.println("Table: " + resultSet.getMetaData().getTableName(1));
-        for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-            System.out.println("Column " + i + " " + resultSet.getMetaData().getColumnName(i));
         }
     }
 }

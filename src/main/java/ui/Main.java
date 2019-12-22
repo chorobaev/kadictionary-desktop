@@ -1,5 +1,7 @@
 package ui;
 
+import data.repositories.AuthRepository;
+import data.repositories.WordsRepository;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -20,8 +22,8 @@ public class Main extends Application {
 
         Scene scene = new Scene(new StackPane(), 535, 205);
 
-        navigationManager = new NavigationManager(scene);
-        navigationManager.showSignInScreen();
+        navigationManager = new NavigationManager(scene, AuthRepository.getInstance(), WordsRepository.getInstance());
+        navigationManager.showMainView();
 
         primaryStage.setTitle(APP_NAME);
         primaryStage.setScene(scene);

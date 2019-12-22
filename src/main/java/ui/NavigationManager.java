@@ -1,34 +1,35 @@
 package ui;
 
-import java.io.IOException;
-import java.util.logging.*;
-
 import data.repositories.AuthRepository;
 import data.repositories.WordsRepository;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.*;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import ui.login.LoginController;
+import javafx.stage.Modality;
+import ui.login.AuthenticationDialog;
 import ui.main.MainController;
-import ui.signup.SignUpController;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NavigationManager {
-    private Scene scene;
+    private final Scene scene;
+    private final WordsRepository wordsRepository;
+    private final AuthRepository authRepository;
 
-    public NavigationManager(Scene scene) {
+    public NavigationManager(Scene scene, AuthRepository authRepository, WordsRepository wordsRepository) {
         this.scene = scene;
+        this.authRepository = authRepository;
+        this.wordsRepository = wordsRepository;
     }
 
-    public void showSignInScreen() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/login.fxml"));
-            scene.setRoot(loader.load());
-            LoginController controller = loader.getController();
-            controller.init(AuthRepository.getInstance());
-        } catch (IOException ex) {
-            Logger.getLogger(NavigationManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void showAuthScreen() {
+        AuthenticationDialog.show(authRepository).ifPresent(user -> {
+            System.out.println("Authorized user: " + user);
+        });
     }
 
     public void showMainView() {
@@ -36,18 +37,7 @@ public class NavigationManager {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/main.fxml"));
             scene.setRoot(loader.load());
             MainController controller = loader.getController();
-            controller.init(WordsRepository.getInstance());
-        } catch (IOException ex) {
-            Logger.getLogger(NavigationManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void showSignUp() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/signup.fxml"));
-            scene.setRoot(loader.load());
-            SignUpController controller = loader.getController();
-            controller.init(AuthRepository.getInstance());
+            controller.init(wordsRepository);
         } catch (IOException ex) {
             Logger.getLogger(NavigationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -55,10 +45,14 @@ public class NavigationManager {
 
     public void showMessage(String msg) {
         Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Билдирүү");
         dialog.setContentText(msg);
-        dialog.showAndWait()
-            .filter(response -> response == ButtonType.OK)
-            .ifPresent(response -> {
-            });
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+        closeButton.managedProperty().bind(closeButton.visibleProperty());
+        closeButton.setVisible(false);
+        dialog.showAndWait();
     }
 }

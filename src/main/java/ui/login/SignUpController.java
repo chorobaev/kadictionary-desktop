@@ -1,4 +1,4 @@
-package ui.signup;
+package ui.login;
 
 import base.BaseController;
 import data.model.User;
@@ -7,10 +7,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import ui.Main;
 
 public class SignUpController extends BaseController {
     private AuthRepository authRepository;
+    private OnAuthorizedListener authorizedListener;
+    private AuthDialogControl authDialogControl;
 
     @FXML private VBox parentVBox;
     @FXML private TextField textFieldName;
@@ -20,7 +21,9 @@ public class SignUpController extends BaseController {
     @FXML private TextField textFieldPasswordConfirm;
 
     @FXML void signIn(ActionEvent event) {
-        Main.getNavigationManager().showSignInScreen();
+        if (authDialogControl != null) {
+            authDialogControl.goSignInScreen();
+        }
     }
 
     @FXML
@@ -38,7 +41,7 @@ public class SignUpController extends BaseController {
 
                 if (user != null) {
                     // TODO: start moderator view
-                    Main.getNavigationManager().showMessage("Катталдыңыз!");
+                    authorizedListener.onAuthorized(user);
                 }
             }
         } catch (Exception ex) {
@@ -48,8 +51,10 @@ public class SignUpController extends BaseController {
         }
     }
 
-    public void init(AuthRepository authRepository) {
+    public void init(AuthRepository authRepository, OnAuthorizedListener listener, AuthDialogControl authDialogControl) {
         this.authRepository = authRepository;
+        this.authorizedListener = listener;
+        this.authDialogControl = authDialogControl;
     }
 
     private boolean validate() {

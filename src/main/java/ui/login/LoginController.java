@@ -5,7 +5,6 @@ import data.repositories.AuthRepository;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -14,6 +13,8 @@ import ui.Main;
 
 public class LoginController extends BaseController {
     private AuthRepository authRepository;
+    private OnAuthorizedListener authorizedListener;
+    private AuthDialogControl authDialogControl;
 
     @FXML private VBox parentVBox;
     @FXML private TextField textFieldEmail;
@@ -24,8 +25,7 @@ public class LoginController extends BaseController {
             try {
                 User user = authRepository.login(textFieldEmail.getText(), textFieldPassword.getText());
                 if (user != null) {
-                    // TODO: start moderator screen
-                    Main.getNavigationManager().showMessage("Signed in!");
+                    authorizedListener.onAuthorized(user);
                 }
             } catch (Exception ex) {
                 // TODO: show incorrect password msg
@@ -37,16 +37,18 @@ public class LoginController extends BaseController {
     }
 
     @FXML void signUp(ActionEvent event) {
-        Main.getNavigationManager().showSignUp();
+        if (authDialogControl != null) {
+            authDialogControl.goSignUpScreen();
+        }
     }
 
     @FXML void initialize() {
         StackPane.setAlignment(parentVBox, Pos.CENTER);
     }
 
-    public void init(AuthRepository authRepository) {
+    public void init(AuthRepository authRepository, OnAuthorizedListener listener, AuthDialogControl authDialogControl) {
         this.authRepository = authRepository;
+        this.authorizedListener = listener;
+        this.authDialogControl = authDialogControl;
     }
-
-
 }

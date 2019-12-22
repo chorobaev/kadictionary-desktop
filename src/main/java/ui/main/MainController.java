@@ -76,7 +76,7 @@ public class MainController extends BaseController {
     }
 
     @FXML void login(ActionEvent event) {
-        Main.getNavigationManager().showSignInScreen();
+        Main.getNavigationManager().showAuthScreen();
     }
 
     @FXML void quit(ActionEvent event) {

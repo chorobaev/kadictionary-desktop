@@ -123,4 +123,25 @@ public class WordsRepository extends BaseRepository {
         }
     }
 
+    public void addWordWithDescriptionInLanguage(String word, String desc) throws Exception {
+        try {
+            openConnection();
+            statement.executeQuery("CALL add" + language + "Word('" + word + "');");
+            if (!desc.isEmpty()) {
+                resultSet = statement.executeQuery("CALL get" + language + "WordIdByWord('" + word + "');");
+                int wordId = parseWordId();
+                statement.executeQuery("CALL add" + language + "Description('" + desc + "', " + wordId + ");");
+            }
+        } finally {
+            close();
+        }
+    }
+
+    private int parseWordId() throws SQLException {
+        int id = -1;
+        if (resultSet != null && resultSet.next()) {
+            id = resultSet.getInt("wordID");
+        }
+        return id;
+    }
 }

@@ -16,8 +16,7 @@ import ui.Navigation;
 import java.util.List;
 import java.util.Map;
 
-import static utility.CommonUtility.formatLanguageTranslations;
-import static utility.CommonUtility.formatListString;
+import static utility.CommonUtility.*;
 
 public class MainController extends BaseController {
     private Navigation navigation;
@@ -42,24 +41,9 @@ public class MainController extends BaseController {
 
     @FXML
     void initialize() {
-        initLanguageMenuButtons();
+        initLanguageMenuButton(menuButtonLanguage, this::changeLanguage);
         initWordsListView();
         initTextFieldSearch();
-    }
-
-    private void initLanguageMenuButtons() {
-        ObservableList<MenuItem> menuItems = menuButtonLanguage.getItems();
-        Language.getMenuItemsInKyrgyz().forEach(menuItem -> {
-            menuItem.setOnAction(action -> {
-                MenuItem menu = (MenuItem) action.getSource();
-                changeLanguage((Language) menu.getUserData());
-                menuButtonLanguage.setText(menu.getText());
-            });
-            menuItems.add(menuItem);
-        });
-        if (!menuItems.isEmpty()) {
-            menuItems.get(0).fire();
-        }
     }
 
     private void initWordsListView() {

@@ -11,7 +11,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import base.BaseController;
-import ui.Main;
 import ui.Navigation;
 
 import java.util.List;
@@ -41,9 +40,11 @@ public class MainController extends BaseController {
         loadAllWords();
     }
 
-    @FXML void initialize() {
+    @FXML
+    void initialize() {
         initLanguageMenuButtons();
         initWordsListView();
+        initTextFieldSearch();
     }
 
     private void initLanguageMenuButtons() {
@@ -67,6 +68,12 @@ public class MainController extends BaseController {
             .addListener(onWordChosenListener);
     }
 
+    private void initTextFieldSearch() {
+        textFieldSearch.textProperty().addListener(((observable, oldValue, newValue) -> {
+            searchWords(newValue);
+        }));
+    }
+
     private void changeLanguage(Language language) {
         if (wordsRepository != null) {
             wordsRepository.changeLanguage(language);
@@ -74,17 +81,14 @@ public class MainController extends BaseController {
         }
     }
 
-    @FXML void onSearchPressed(ActionEvent event) {
-        String word = textFieldSearch.getText();
-        searchWords(word);
-    }
-
-    @FXML void login(ActionEvent event) {
+    @FXML
+    void login(ActionEvent event) {
         navigation.showAuthDialog();
     }
 
-    @FXML void quit(ActionEvent event) {
-
+    @FXML
+    void quit(ActionEvent event) {
+        System.exit(0);
     }
 
     private void loadAllWords() {
@@ -109,6 +113,7 @@ public class MainController extends BaseController {
             if (wordsRepository != null) {
                 List<Word> words = wordsRepository.searchWord(word);
                 if (word != null) this.words.addAll(words);
+                if (!words.isEmpty()) listViewWords.getSelectionModel().select(0);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

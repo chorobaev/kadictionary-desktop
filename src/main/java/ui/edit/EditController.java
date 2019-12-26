@@ -83,6 +83,15 @@ public class EditController {
         return descs;
     }
 
+    private Map<Language, List<Word>> getTranslationsByWordId(Language language, int wordId) {
+        Map<Language, List<Word>> translations = null;
+        try {
+            translations = wordsRepository.getTranslationsByWordId(language, wordId);
+        } catch (Exception ignored) {
+        }
+        return translations;
+    }
+
     private class ActualWordInteractionListener implements WordController.WordInteractionListener {
 
         private Language language;
@@ -94,7 +103,9 @@ public class EditController {
 
         @Override
         public void onWordChosen(Word word) {
-            onWordSelectedListener.onWordChanged(word);
+            if (onWordSelectedListener != null) {
+                onWordSelectedListener.onWordChanged(word);
+            }
         }
 
         @Override
@@ -156,7 +167,7 @@ public class EditController {
 
         @Override
         public Map<Language, List<Word>> getTranslationsByWord(Word word) {
-            return null;
+            return getTranslationsByWordId(word.getLanguage(), word.getId());
         }
 
         @Override

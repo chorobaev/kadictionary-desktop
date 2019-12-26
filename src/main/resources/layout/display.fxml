@@ -15,7 +15,7 @@
             <Label text="Маанилери:" />
             <ListView fx:id="listViewDescriptions" prefHeight="200.0" prefWidth="200.0">
                <VBox.margin>
-                  <Insets top="10.0" />
+                  <Insets left="10.0" top="10.0" />
                </VBox.margin>
             </ListView>
             <Label text="Котормолору:">
@@ -23,7 +23,11 @@
                   <Insets top="20.0" />
                </VBox.margin>
             </Label>
-            <Accordion fx:id="accordionTranslations" />
+            <Accordion fx:id="accordionTranslations" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets left="10.0" top="10.0" />
+               </VBox.margin>
+            </Accordion>
          </children>
          <VBox.margin>
             <Insets left="10.0" top="10.0" />

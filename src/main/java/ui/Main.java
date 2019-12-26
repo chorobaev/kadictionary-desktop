@@ -12,19 +12,19 @@ import static utility.AppConstant.APP_NAME;
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
 
         Scene scene = new Scene(new StackPane(), 535, 205);
 
         Navigation navigation = new NavigationManager(scene, AuthRepository.getInstance(), WordsRepository.getInstance());
-        navigation.showMainView();
+        navigation.showEditView();
 
         primaryStage.setTitle(APP_NAME);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         launch(args);
     }
 }

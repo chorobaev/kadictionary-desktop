@@ -27,13 +27,13 @@ public class TranslationsNode extends TitledPane {
     }
 
     public void setTranslations(List<Word> translations) {
-        translations.clear();
+        this.translations.clear();
         this.translations.addAll(translations);
     }
 
     private void initView() {
-        getChildren().add(listViewWords);
         listViewWords.setItems(translations);
+        setContent(listViewWords);
         listViewWords.getSelectionModel().selectedIndexProperty().addListener(this::onTranslationSelected);
     }
 

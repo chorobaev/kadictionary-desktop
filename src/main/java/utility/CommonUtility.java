@@ -1,6 +1,7 @@
 package utility;
 
 import data.model.Language;
+import data.model.Word;
 import javafx.collections.ObservableList;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -22,18 +23,18 @@ public class CommonUtility {
         return sb.toString();
     }
 
-    public static String formatLanguageTranslations(Map<Language, List<String>> translations) {
+    public static String formatLanguageTranslations(Map<Language, List<Word>> translations) {
         StringBuilder sb = new StringBuilder();
 
         for (Language lang : translations.keySet()) {
             sb.append(kyrgyzTranslation(lang));
             sb.append('\n');
 
-            List<String> trans = translations.get(lang);
+            List<Word> trans = translations.get(lang);
             sb.append("    - ");
             for (int i = 0; i < trans.size(); i++) {
                 if (i != 0) sb.append(", ");
-                sb.append(trans.get(i));
+                sb.append(trans.get(i).getWord());
             }
             sb.append('\n');
         }

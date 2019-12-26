@@ -134,7 +134,7 @@ public class MainController extends BaseController {
         private void showTranslations(int wordId) {
             try {
                 if (wordsRepository != null) {
-                    Map<Language, List<String>> translations = wordsRepository.getTranslationsByWordId(language, wordId);
+                    Map<Language, List<Word>> translations = wordsRepository.getTranslationsByWordId(language, wordId);
                     System.out.println(translations.toString());
                     labelArabicTranslation.setText(formatLanguageTranslations(translations));
                 }

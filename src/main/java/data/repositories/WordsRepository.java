@@ -50,8 +50,8 @@ public class WordsRepository extends BaseRepository {
         return words;
     }
 
-    public Map<Language, List<String>> getTranslationsByWordId(Language language, int wordId) throws Exception {
-        Map<Language, List<String>> translations = new HashMap<>();
+    public Map<Language, List<Word>> getTranslationsByWordId(Language language, int wordId) throws Exception {
+        Map<Language, List<Word>> translations = new HashMap<>();
         System.out.println("Translate to:  " + language.getLanguagesExceptSelf());
         for (Language lan : language.getLanguagesExceptSelf()) {
             translations.put(lan, getTranslationsByWordId(language, wordId, lan));
@@ -72,14 +72,14 @@ public class WordsRepository extends BaseRepository {
         return result;
     }
 
-    private List<String> getTranslationsByWordId(Language language, int wordId, Language preferedLang) throws Exception {
-        List<String> result = new ArrayList<>();
+    private List<Word> getTranslationsByWordId(Language language, int wordId, Language preferedLang) throws Exception {
+        List<Word> result = new ArrayList<>();
         try {
             openConnection();
             String query = "CALL get" + language + "Word" + preferedLang + "TranslationsByWordId(" + wordId + ");";
             System.out.println("Translation query: " + query);
             resultSet = statement.executeQuery(query);
-            parseTranslations(result);
+            parseWords(language, result);
         } finally {
             close();
         }

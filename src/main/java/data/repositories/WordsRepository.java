@@ -116,7 +116,7 @@ public class WordsRepository extends BaseRepository {
         }
     }
 
-    public void addWordWithDescriptionInLanguage(Language language, String word, String desc) throws Exception {
+    public void addWordWithDescription(Language language, String word, String desc) throws Exception {
         try {
             openConnection();
             statement.executeQuery("CALL add" + language + "Word('" + word + "');");

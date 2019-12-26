@@ -1,5 +1,7 @@
 package ui;
 
+import data.model.Language;
+import data.model.Word;
 import data.repositories.AuthRepository;
 import data.repositories.WordsRepository;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import ui.edit.EditController;
+import ui.edit.NewWordDialog;
 import ui.login.AuthenticationDialog;
 import ui.main.MainController;
 
@@ -60,6 +63,13 @@ public class NavigationManager implements Navigation {
         closeButton.managedProperty().bind(closeButton.visibleProperty());
         closeButton.setVisible(false);
         dialog.showAndWait();
+    }
+
+    @Override
+    public void showNewWordDialog(Language language, String word) {
+        NewWordDialog.show(this, wordsRepository, language, word).ifPresent(success -> {
+            System.out.println("Success saving word");
+        });
     }
 
     @Override

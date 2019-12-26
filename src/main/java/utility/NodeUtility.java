@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import ui.NavigationManager;
@@ -33,7 +32,7 @@ public class NodeUtility {
     public VBox getNewWordPane(WordController.WordInteractionListener listener) {
         VBox parent = null;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/new_word.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/words.fxml"));
             parent = loader.load();
             WordController controller = loader.getController();
             controller.init(listener);

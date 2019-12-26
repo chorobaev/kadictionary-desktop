@@ -1,5 +1,6 @@
 package utility;
 
+import data.model.KAWord;
 import data.model.Language;
 import data.model.Word;
 import javafx.collections.ObservableList;
@@ -40,6 +41,11 @@ public class CommonUtility {
         }
 
         return sb.toString();
+    }
+
+    public static Word getAddWord(Language language) {
+        // TODO: add localization
+        return new KAWord(-1, "Кошуу +", -1, language);
     }
 
     public interface OnLanguageChangedListener {

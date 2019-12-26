@@ -1,5 +1,7 @@
 package ui;
 
+import data.model.Language;
+
 public interface Navigation {
 
     void showMainView();
@@ -9,4 +11,6 @@ public interface Navigation {
     void showEditView();
 
     void showMessage(String msg);
+
+    void showNewWordDialog(Language language, String word);
 }

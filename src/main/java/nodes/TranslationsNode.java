@@ -8,30 +8,35 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TitledPane;
+import ui.common.OnWordSelectedListener;
+import utility.CommonUtility;
 
 import java.util.List;
 
 public class TranslationsNode extends TitledPane {
+    private Language language;
     private ObservableList<Word> translations = FXCollections.observableArrayList();
     private ListView<Word> listViewWords = new ListView<>();
 
-    private OnTranslationSelectedListener onTranslationSelectedListener;
+    private OnWordSelectedListener onWordSelectedListener;
 
     public TranslationsNode(Language language) {
-        setText(Translation.of(language).inKyrgyz());
+        this.language = language;
         initView();
     }
 
-    public void setOnTranslationSelectedListener(OnTranslationSelectedListener onTranslationSelectedListener) {
-        this.onTranslationSelectedListener = onTranslationSelectedListener;
+    public void setOnWordSelectedListener(OnWordSelectedListener onWordSelectedListener) {
+        this.onWordSelectedListener = onWordSelectedListener;
     }
 
     public void setTranslations(List<Word> translations) {
         this.translations.clear();
         this.translations.addAll(translations);
+        this.translations.add(CommonUtility.getAddWord(language));
     }
 
     private void initView() {
+        setText(Translation.of(language).inKyrgyz());
         listViewWords.setItems(translations);
         setContent(listViewWords);
         listViewWords.getSelectionModel().selectedIndexProperty().addListener(this::onTranslationSelected);
@@ -39,15 +44,11 @@ public class TranslationsNode extends TitledPane {
 
     private void onTranslationSelected(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
         try {
-            if (onTranslationSelectedListener != null) {
-                onTranslationSelectedListener.onSelected(translations.get(newValue.intValue()));
+            if (onWordSelectedListener != null) {
+                onWordSelectedListener.onSelected(translations.get(newValue.intValue()));
             }
         } catch (ArrayIndexOutOfBoundsException ignored) {
             listViewWords.getSelectionModel().clearSelection();
         }
-    }
-
-    public interface OnTranslationSelectedListener {
-        void onSelected(Word word);
     }
 }

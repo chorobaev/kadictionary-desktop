@@ -97,8 +97,8 @@ public class EditController {
         private Language language;
 
         @Override
-        public void addWordWithDescription(String word, String desc) {
-
+        public void addNewWord(String word) {
+            navigation.showNewWordDialog(language, word);
         }
 
         @Override
@@ -128,7 +128,7 @@ public class EditController {
         private Language language;
 
         @Override
-        public void addWordWithDescription(String word, String desc) {
+        public void addNewWord(String word) {
 
         }
 

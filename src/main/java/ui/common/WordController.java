@@ -6,12 +6,11 @@ import data.model.Word;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import utility.CommonUtility;
 import utility.NodeUtility;
 
 import java.util.List;
@@ -19,18 +18,11 @@ import java.util.List;
 public class WordController extends BaseController {
     private WordInteractionListener interactionListener;
     private final ObservableList<Word> words = FXCollections.observableArrayList();
+    private Language language;
 
     @FXML private MenuButton menuButtonLanguage;
     @FXML private TextField textFieldWord;
     @FXML private ListView<Word> listViewSuggestions;
-    @FXML private TextArea textAreaDescription;
-
-    @FXML
-    void addWord(ActionEvent event) {
-        if (interactionListener != null) {
-            interactionListener.addWordWithDescription(textFieldWord.getText(), textAreaDescription.getText());
-        }
-    }
 
     public void init(WordInteractionListener interactionListener) {
         this.interactionListener = interactionListener;
@@ -41,8 +33,10 @@ public class WordController extends BaseController {
     }
 
     private void changeLanguage(Language language) {
+        this.language = language;
         if (interactionListener != null) {
             interactionListener.onLanguageChanged(language);
+            loadWords(interactionListener.getAllWords());
         }
     }
 
@@ -63,6 +57,9 @@ public class WordController extends BaseController {
         if (interactionListener != null) {
             List<Word> words = interactionListener.searchForWord(word);
             loadWords(words);
+            if (words.isEmpty()) {
+                this.words.add(CommonUtility.getAddWord(language));
+            }
         }
     }
 
@@ -70,14 +67,20 @@ public class WordController extends BaseController {
         this.words.clear();
         if (words != null) {
             this.words.addAll(words);
-            if (!words.isEmpty()) listViewSuggestions.getSelectionModel().select(0);
         }
     }
 
     private void onWordSelected(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
         try {
+            Word word = words.get(newValue.intValue());
             if (interactionListener != null) {
-                interactionListener.onWordChosen(words.get(newValue.intValue()));
+                if (word.getId() == -1) {
+                    interactionListener.addNewWord(textFieldWord.getText());
+                    this.words.clear();
+                    loadWords(interactionListener.getAllWords());
+                } else {
+                    interactionListener.onWordChosen(word);
+                }
             }
         } catch (ArrayIndexOutOfBoundsException ignored) {
             listViewSuggestions.getSelectionModel().clearSelection();
@@ -86,7 +89,7 @@ public class WordController extends BaseController {
 
     public interface WordInteractionListener {
 
-        void addWordWithDescription(String word, String desc);
+        void addNewWord(String word);
 
         void onWordChosen(Word word);
 

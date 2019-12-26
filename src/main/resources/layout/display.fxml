@@ -13,7 +13,7 @@
       <VBox>
          <children>
             <Label text="Маанилери:" />
-            <ListView fx:id="listViewDescriptions" prefHeight="200.0" prefWidth="200.0">
+            <ListView fx:id="listViewDescriptions" minHeight="80.0" prefHeight="200.0" prefWidth="200.0">
                <VBox.margin>
                   <Insets left="10.0" top="10.0" />
                </VBox.margin>

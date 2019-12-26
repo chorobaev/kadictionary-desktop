@@ -9,8 +9,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.Pane;
 import nodes.TranslationsNode;
 
 import java.util.List;
@@ -54,7 +52,7 @@ public class DisplayController extends BaseController {
         if (translations != null) {
             translations.keySet().forEach(language -> {
                 TranslationsNode node = new TranslationsNode(language);
-                node.setOnTranslationSelectedListener(word ->
+                node.setOnWordSelectedListener(word ->
                     displayInteractionListener.onTranslationSelected(language, word)
                 );
                 node.setTranslations(translations.get(language));

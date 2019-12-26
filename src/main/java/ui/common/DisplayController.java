@@ -40,14 +40,14 @@ public class DisplayController extends BaseController {
 
     private void loadDescriptions() {
         descriptions.clear();
-        List<String> descs = displayInteractionListener.getDescriptionsByWordId(currentWord.getId());
+        List<String> descs = displayInteractionListener.getDescriptionsByWord(currentWord);
         if (descs != null) {
             descriptions.addAll(descs);
         }
     }
 
     private void loadTranslations() {
-        Map<Language, List<Word>> translations = displayInteractionListener.getTranslationsByWordId(currentWord.getId());
+        Map<Language, List<Word>> translations = displayInteractionListener.getTranslationsByWord(currentWord);
         if (translations != null) {
             translations.keySet().forEach(language -> {
                 TranslationsNode node = new TranslationsNode(language);
@@ -63,9 +63,9 @@ public class DisplayController extends BaseController {
 
         void setOnDisplayChangedListener(OnDisplayChangedListener displayChangedListener);
 
-        List<String> getDescriptionsByWordId(int id);
+        List<String> getDescriptionsByWord(Word word);
 
-        Map<Language, List<Word>> getTranslationsByWordId(int id);
+        Map<Language, List<Word>> getTranslationsByWord(Word word);
 
         void onTranslationSelected(Language language, Word word);
     }

@@ -67,6 +67,7 @@ public class WordController extends BaseController {
     }
 
     private void loadWords(List<Word> words) {
+        this.words.clear();
         if (words != null) {
             this.words.addAll(words);
             if (!words.isEmpty()) listViewSuggestions.getSelectionModel().select(0);

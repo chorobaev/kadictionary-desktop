@@ -21,52 +21,45 @@ public class WordsRepository extends BaseRepository {
         return instance;
     }
 
-    private Language language = Language.KYRGYZ;
-
     private WordsRepository() {
     }
 
-    public void changeLanguage(Language language) {
-        System.out.println("New language: " + language);
-        this.language = language;
-    }
-
-    public List<Word> getAllWords() throws Exception {
+    public List<Word> getAllWords(Language language) throws Exception {
         List<Word> words = new ArrayList<>();
         try {
             openConnection();
             String query = "CALL getAll" + language + "Words();";
             resultSet = statement.executeQuery(query);
-            parseWords(words);
+            parseWords(language, words);
         } finally {
             close();
         }
         return words;
     }
 
-    public List<Word> searchWord(String substring) throws Exception {
+    public List<Word> searchWord(Language language, String substring) throws Exception {
         List<Word> words = new ArrayList<>();
         try {
             openConnection();
             String query = "CALL search" + language + "Word('" + substring + "');";
             resultSet = statement.executeQuery(query);
-            parseWords(words);
+            parseWords(language, words);
         } finally {
             close();
         }
         return words;
     }
 
-    public Map<Language, List<String>> getTranslationsByWordId(int wordId) throws Exception {
+    public Map<Language, List<String>> getTranslationsByWordId(Language language, int wordId) throws Exception {
         Map<Language, List<String>> translations = new HashMap<>();
         System.out.println("Translate to:  " + language.getLanguagesExceptSelf());
         for (Language lan : language.getLanguagesExceptSelf()) {
-            translations.put(lan, getTranslationsByWordId(wordId, lan));
+            translations.put(lan, getTranslationsByWordId(language, wordId, lan));
         }
         return translations;
     }
 
-    public List<String> getDescriptionByWordId(int wordId) throws Exception {
+    public List<String> getDescriptionByWordId(Language language, int wordId) throws Exception {
         List<String> result = new ArrayList<>();
         try {
             openConnection();
@@ -79,7 +72,7 @@ public class WordsRepository extends BaseRepository {
         return result;
     }
 
-    private List<String> getTranslationsByWordId(int wordId, Language preferedLang) throws Exception {
+    private List<String> getTranslationsByWordId(Language language, int wordId, Language preferedLang) throws Exception {
         List<String> result = new ArrayList<>();
         try {
             openConnection();
@@ -93,7 +86,7 @@ public class WordsRepository extends BaseRepository {
         return result;
     }
 
-    private void parseWords(List<Word> words) throws SQLException {
+    private void parseWords(Language language, List<Word> words) throws SQLException {
         if (resultSet != null) {
             while (resultSet.next()) {
                 int wordId = resultSet.getInt("wordID");
@@ -123,7 +116,7 @@ public class WordsRepository extends BaseRepository {
         }
     }
 
-    public void addWordWithDescriptionInLanguage(String word, String desc) throws Exception {
+    public void addWordWithDescriptionInLanguage(Language language, String word, String desc) throws Exception {
         try {
             openConnection();
             statement.executeQuery("CALL add" + language + "Word('" + word + "');");

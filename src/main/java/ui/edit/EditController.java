@@ -1,6 +1,7 @@
 package ui.edit;
 
 import data.model.Language;
+import data.model.Translation;
 import data.model.Word;
 import data.repositories.WordsRepository;
 import javafx.fxml.FXML;
@@ -53,16 +54,38 @@ public class EditController {
         NodeUtility.setAnchorsZero(right);
     }
 
-    private List<Word> getAllWords() {
+    private List<Word> getAllWords(Language language) {
         List<Word> words = null;
         try {
-            words = wordsRepository.getAllWords();
+            words = wordsRepository.getAllWords(language);
         } catch (Exception ignored) {
         }
         return words;
     }
 
+    private List<Word> searchForWord(Language language, String word) {
+        List<Word> words = null;
+        try {
+            words = wordsRepository.searchWord(language, word);
+        } catch (Exception ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+        return words;
+    }
+
+    private List<String> getDescriptionsByWordId(Language language, int wordId) {
+        List<String> descs = null;
+        try {
+            descs = wordsRepository.getDescriptionByWordId(language, wordId);
+        } catch (Exception ignored) {
+
+        }
+        return descs;
+    }
+
     private class ActualWordInteractionListener implements WordController.WordInteractionListener {
+
+        private Language language;
 
         @Override
         public void addWordWithDescription(String word, String desc) {
@@ -76,28 +99,22 @@ public class EditController {
 
         @Override
         public List<Word> searchForWord(String word) {
-            System.out.println("Searching for word: " + word);
-            List<Word> words = null;
-            try {
-                words = wordsRepository.searchWord(word);
-            } catch (Exception ex) {
-                System.out.println("Error: " + ex.getMessage());
-            }
-            return words;
+            return EditController.this.searchForWord(language, word);
         }
 
         @Override
         public List<Word> getAllWords() {
-            return EditController.this.getAllWords();
+            return EditController.this.getAllWords(language);
         }
 
         @Override
         public void onLanguageChanged(Language language) {
-            wordsRepository.changeLanguage(language);
+            this.language = language;
         }
     }
 
     private class TranslationWordInteractionListener implements WordController.WordInteractionListener {
+        private Language language;
 
         @Override
         public void addWordWithDescription(String word, String desc) {
@@ -133,12 +150,12 @@ public class EditController {
         }
 
         @Override
-        public List<String> getDescriptionsByWordId(int id) {
-            return null;
+        public List<String> getDescriptionsByWord(Word word) {
+            return EditController.this.getDescriptionsByWordId(word.getLanguage(), word.getId());
         }
 
         @Override
-        public Map<Language, List<Word>> getTranslationsByWordId(int id) {
+        public Map<Language, List<Word>> getTranslationsByWord(Word word) {
             return null;
         }
 

@@ -22,6 +22,7 @@ import static utility.CommonUtility.*;
 public class MainController extends BaseController {
     private Navigation navigation;
     private WordsRepository wordsRepository;
+    private Language language = Language.KYRGYZ;
 
     @FXML private TextField textFieldSearch;
     @FXML private MenuButton menuButtonLanguage;
@@ -50,14 +51,12 @@ public class MainController extends BaseController {
     }
 
     private void initTextFieldSearch() {
-        textFieldSearch.textProperty().addListener(((observable, oldValue, newValue) -> {
-            searchWords(newValue);
-        }));
+        textFieldSearch.textProperty().addListener(((observable, oldValue, newValue) -> searchWords(newValue)));
     }
 
     private void changeLanguage(Language language) {
+        this.language = language;
         if (wordsRepository != null) {
-            wordsRepository.changeLanguage(language);
             loadAllWords();
         }
     }
@@ -81,7 +80,7 @@ public class MainController extends BaseController {
         try {
             this.words.clear();
             if (wordsRepository != null) {
-                List<Word> words = wordsRepository.getAllWords();
+                List<Word> words = wordsRepository.getAllWords(language);
                 if (words != null) {
                     this.words.addAll(words);
                     if (!words.isEmpty()) listViewWords.getSelectionModel().select(0);
@@ -97,7 +96,7 @@ public class MainController extends BaseController {
         try {
             this.words.clear();
             if (wordsRepository != null) {
-                List<Word> words = wordsRepository.searchWord(word);
+                List<Word> words = wordsRepository.searchWord(language, word);
                 if (word != null) this.words.addAll(words);
                 if (!words.isEmpty()) listViewWords.getSelectionModel().select(0);
             }
@@ -124,7 +123,7 @@ public class MainController extends BaseController {
         private void showDescriptions(int wordId) {
             try {
                 if (wordsRepository != null) {
-                    List<String> descriptions = wordsRepository.getDescriptionByWordId(wordId);
+                    List<String> descriptions = wordsRepository.getDescriptionByWordId(language, wordId);
                     labelDescription.setText(formatListString(descriptions));
                 }
             } catch (Exception ex) {
@@ -135,7 +134,7 @@ public class MainController extends BaseController {
         private void showTranslations(int wordId) {
             try {
                 if (wordsRepository != null) {
-                    Map<Language, List<String>> translations = wordsRepository.getTranslationsByWordId(wordId);
+                    Map<Language, List<String>> translations = wordsRepository.getTranslationsByWordId(language, wordId);
                     System.out.println(translations.toString());
                     labelArabicTranslation.setText(formatLanguageTranslations(translations));
                 }

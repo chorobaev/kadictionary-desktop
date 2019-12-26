@@ -20,6 +20,7 @@ import static utility.CommonUtility.*;
 
 public class MainController extends BaseController {
     private Navigation navigation;
+    private WordsRepository wordsRepository;
 
     @FXML private TextField textFieldSearch;
     @FXML private MenuButton menuButtonLanguage;
@@ -29,7 +30,6 @@ public class MainController extends BaseController {
     @FXML private Label labelArabicTranslation;
 
     private final ObservableList<Word> words = FXCollections.observableArrayList();
-    private WordsRepository wordsRepository;
     private OnWordChosenListener onWordChosenListener = new OnWordChosenListener();
 
     public void init(Navigation navigation, WordsRepository wordsRepository) {
@@ -68,6 +68,11 @@ public class MainController extends BaseController {
     @FXML
     void login(ActionEvent event) {
         navigation.showAuthDialog();
+    }
+
+    @FXML
+    void edit(ActionEvent event) {
+        navigation.showEditView();
     }
 
     @FXML

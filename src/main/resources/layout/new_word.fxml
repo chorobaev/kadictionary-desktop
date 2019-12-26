@@ -9,22 +9,21 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="376.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.edit.WordController">
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.edit.WordController">
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
     <HBox>
-        <MenuButton fx:id="menuButtonLanguage" mnemonicParsing="false" prefWidth="1000.0" text="Тилди тандаңыз"
-                    HBox.hgrow="ALWAYS"/>
+        <MenuButton fx:id="menuButtonLanguage" mnemonicParsing="false" prefWidth="1000.0" text="Тилди тандаңыз" HBox.hgrow="ALWAYS" />
     </HBox>
     <HBox>
         <VBox.margin>
-            <Insets top="10.0"/>
+            <Insets top="10.0" />
         </VBox.margin>
-        <TextField fx:id="textFieldWord" promptText="Сөз" HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="textFieldWord" promptText="Сөз" HBox.hgrow="ALWAYS" />
         <Button mnemonicParsing="false" onAction="#addWord" text="+">
             <HBox.margin>
-                <Insets left="10.0"/>
+                <Insets left="10.0" />
             </HBox.margin>
         </Button>
     </HBox>

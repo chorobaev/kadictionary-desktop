@@ -7,7 +7,10 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
+import ui.edit.EditController;
 import ui.login.AuthenticationDialog;
 import ui.main.MainController;
 
@@ -26,12 +29,14 @@ public class NavigationManager implements Navigation {
         this.wordsRepository = wordsRepository;
     }
 
+    @Override
     public void showAuthDialog() {
         AuthenticationDialog.show(this, authRepository).ifPresent(user -> {
             System.out.println("Authorized user: " + user);
         });
     }
 
+    @Override
     public void showMainView() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/main.fxml"));
@@ -43,6 +48,7 @@ public class NavigationManager implements Navigation {
         }
     }
 
+    @Override
     public void showMessage(String msg) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Билдирүү");
@@ -54,5 +60,17 @@ public class NavigationManager implements Navigation {
         closeButton.managedProperty().bind(closeButton.visibleProperty());
         closeButton.setVisible(false);
         dialog.showAndWait();
+    }
+
+    @Override
+    public void showEditView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/edit.fxml"));
+            scene.setRoot(loader.load());
+            EditController controller = loader.getController();
+            controller.init(this, wordsRepository);
+        } catch (IOException ex) {
+            Logger.getLogger(NavigationManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

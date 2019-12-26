@@ -6,5 +6,7 @@ public interface Navigation {
 
     void showAuthDialog();
 
+    void showEditView();
+
     void showMessage(String msg);
 }

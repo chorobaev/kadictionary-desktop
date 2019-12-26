@@ -21,6 +21,7 @@
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="File">
             <MenuItem mnemonicParsing="false" onAction="#login" text="Log in" />
+         <MenuItem mnemonicParsing="false" onAction="#edit" text="Edit" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#quit" text="Quit" />
         </Menu>

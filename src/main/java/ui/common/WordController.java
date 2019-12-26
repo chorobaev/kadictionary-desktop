@@ -6,11 +6,13 @@ import data.model.Word;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import utility.CommonUtility;
 import utility.NodeUtility;
 
@@ -20,6 +22,7 @@ public class WordController extends BaseController {
     private WordInteractionListener interactionListener;
     private final ObservableList<Word> words = FXCollections.observableArrayList();
     private Language language;
+    private int selectedIndex = -1;
 
     @FXML private MenuButton menuButtonLanguage;
     @FXML private TextField textFieldWord;
@@ -47,7 +50,18 @@ public class WordController extends BaseController {
         if (interactionListener != null) {
             loadWords(interactionListener.getAllWords());
         }
-        listViewSuggestions.getSelectionModel().selectedIndexProperty().addListener(this::onWordSelected);
+        listViewSuggestions.setOnMouseClicked(event -> {
+            Word word = listViewSuggestions.getSelectionModel().getSelectedItem();
+            if (interactionListener != null) {
+                if (word.getId() == -1) {
+                    interactionListener.addNewWord(textFieldWord.getText());
+                    this.words.clear();
+                    loadWords(interactionListener.getAllWords());
+                } else {
+                    interactionListener.onWordChosen(word);
+                }
+            }
+        });
     }
 
     private void initTextFieldSearch() {
@@ -86,23 +100,6 @@ public class WordController extends BaseController {
                 textFieldWord.setText(word.getWord());
             }
         });
-    }
-
-    private void onWordSelected(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-        try {
-            Word word = words.get(newValue.intValue());
-            if (interactionListener != null) {
-                if (word.getId() == -1) {
-                    interactionListener.addNewWord(textFieldWord.getText());
-                    this.words.clear();
-                    loadWords(interactionListener.getAllWords());
-                } else {
-                    interactionListener.onWordChosen(word);
-                }
-            }
-        } catch (ArrayIndexOutOfBoundsException ignored) {
-            listViewSuggestions.getSelectionModel().clearSelection();
-        }
     }
 
     public interface WordInteractionListener {

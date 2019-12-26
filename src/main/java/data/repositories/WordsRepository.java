@@ -107,12 +107,25 @@ public class WordsRepository extends BaseRepository {
         }
     }
 
-    private void parseTranslations(List<String> list) throws SQLException {
-        if (resultSet != null) {
-            while (resultSet.next()) {
-                String translation = resultSet.getString("translation");
-                list.add(translation);
-            }
+    public void addWordTranslations(Word first, Word second) throws Exception {
+        String firstLang = first.getLanguage().toString();
+        String secondLang = second.getLanguage().toString();
+
+        if (firstLang.compareTo(secondLang) > 0) {
+            String temp = firstLang;
+            firstLang = secondLang;
+            secondLang = temp;
+
+            Word word = first;
+            first = second;
+            second = word;
+        }
+        try {
+            openConnection();
+            String query = "CALL add" + firstLang + secondLang + "Matching(" + first.getId() + ", " + second.getId() + ");";
+            statement.executeQuery(query);
+        } finally {
+            close();
         }
     }
 

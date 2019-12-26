@@ -37,6 +37,7 @@ public class TranslationsNode extends TitledPane {
 
     private void initView() {
         setText(Translation.of(language).inKyrgyz());
+        setExpanded(false);
         listViewWords.setItems(translations);
         setContent(listViewWords);
         listViewWords.getSelectionModel().selectedIndexProperty().addListener(this::onTranslationSelected);

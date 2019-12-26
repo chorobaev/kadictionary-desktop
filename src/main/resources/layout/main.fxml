@@ -19,14 +19,10 @@
 
 <VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.main.MainController">
     <MenuBar VBox.vgrow="NEVER">
-        <Menu mnemonicParsing="false" text="File">
-            <MenuItem mnemonicParsing="false" onAction="#login" text="Log in" />
-         <MenuItem mnemonicParsing="false" onAction="#edit" text="Edit" />
+        <Menu mnemonicParsing="false" text="Файл">
+         <MenuItem mnemonicParsing="false" onAction="#edit" text="Өзгөртүү киргизүү" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#quit" text="Quit" />
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-            <MenuItem mnemonicParsing="false" text="About" />
+            <MenuItem mnemonicParsing="false" onAction="#quit" text=" Чыгуу" />
         </Menu>
     </MenuBar>
     <AnchorPane maxHeight="-Infinity" prefHeight="40.0">
@@ -43,7 +39,7 @@
         <AnchorPane maxWidth="400.0" minWidth="200.0" prefHeight="1000.0" prefWidth="1000.0">
             <ListView fx:id="listViewWords" layoutY="-53.0" prefHeight="453.0" prefWidth="221.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
         </AnchorPane>
-        <ScrollPane>
+        <ScrollPane hbarPolicy="NEVER">
             <AnchorPane id="Content" prefHeight="1000.0" prefWidth="1000.0">
                 <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="8.0">
                     <Label fx:id="labelWord" text="Word">

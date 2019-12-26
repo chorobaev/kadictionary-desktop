@@ -1,5 +1,6 @@
 package ui.main;
 
+import base.BaseController;
 import data.model.Language;
 import data.model.Word;
 import data.repositories.WordsRepository;
@@ -9,15 +10,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import base.BaseController;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.TextField;
 import ui.Navigation;
 import utility.NodeUtility;
 
 import java.util.List;
 import java.util.Map;
 
-import static utility.CommonUtility.*;
+import static utility.CommonUtility.formatLanguageTranslations;
+import static utility.CommonUtility.formatListString;
 
 public class MainController extends BaseController {
     private Navigation navigation;
@@ -59,11 +63,6 @@ public class MainController extends BaseController {
         if (wordsRepository != null) {
             loadAllWords();
         }
-    }
-
-    @FXML
-    void login(ActionEvent event) {
-        navigation.showAuthDialog();
     }
 
     @FXML

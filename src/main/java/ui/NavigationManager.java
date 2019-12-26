@@ -74,13 +74,15 @@ public class NavigationManager implements Navigation {
 
     @Override
     public void showEditView() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/edit.fxml"));
-            scene.setRoot(loader.load());
-            EditController controller = loader.getController();
-            controller.init(this, wordsRepository);
-        } catch (IOException ex) {
-            Logger.getLogger(NavigationManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        AuthenticationDialog.show(this, authRepository).ifPresent(user -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/edit.fxml"));
+                scene.setRoot(loader.load());
+                EditController controller = loader.getController();
+                controller.init(this, wordsRepository);
+            } catch (IOException ex) {
+                Logger.getLogger(NavigationManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
 }

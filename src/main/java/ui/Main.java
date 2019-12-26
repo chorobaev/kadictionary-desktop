@@ -17,7 +17,7 @@ public class Main extends Application {
         Scene scene = new Scene(new StackPane(), 535, 205);
 
         Navigation navigation = new NavigationManager(scene, AuthRepository.getInstance(), WordsRepository.getInstance());
-        navigation.showEditView();
+        navigation.showMainView();
 
         primaryStage.setTitle(APP_NAME);
         primaryStage.setScene(scene);

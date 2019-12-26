@@ -24,7 +24,8 @@ public class SignUpController extends BaseController {
     @FXML private TextField textFieldPassword;
     @FXML private TextField textFieldPasswordConfirm;
 
-    @FXML void signIn(ActionEvent event) {
+    @FXML
+    void signIn(ActionEvent event) {
         if (authDialogControl != null) {
             authDialogControl.goSignInScreen();
         }
@@ -59,7 +60,7 @@ public class SignUpController extends BaseController {
         if (ex instanceof SQLException && ((SQLException) ex).getErrorCode() == 1062) {
             System.out.println("Error code: " + ((SQLException) ex).getErrorCode());
             if (navigation != null) {
-                String msg = "Эл. почта '" + textFieldEmail.getText() + "' системада ктталган";
+                String msg = "Эл. почта '" + textFieldEmail.getText() + "' системада катталган!";
                 navigation.showMessage(msg);
             }
         }

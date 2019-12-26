@@ -4,9 +4,9 @@ import data.model.Language;
 import data.model.Translation;
 import data.model.Word;
 import data.repositories.WordsRepository;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -29,6 +29,13 @@ public class EditController {
     @FXML private AnchorPane paneLeft;
     @FXML private AnchorPane paneCenter;
     @FXML private AnchorPane paneRight;
+
+    @FXML
+    void back(ActionEvent event) {
+        if (navigation != null) {
+            navigation.showMainView();
+        }
+    }
 
     public void init(Navigation navigation, WordsRepository wordsRepository) {
         this.navigation = navigation;

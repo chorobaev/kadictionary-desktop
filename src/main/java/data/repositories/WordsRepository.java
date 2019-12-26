@@ -79,7 +79,7 @@ public class WordsRepository extends BaseRepository {
             String query = "CALL get" + language + "Word" + preferedLang + "TranslationsByWordId(" + wordId + ");";
             System.out.println("Translation query: " + query);
             resultSet = statement.executeQuery(query);
-            parseWords(language, result);
+            parseWords(preferedLang, result);
         } finally {
             close();
         }

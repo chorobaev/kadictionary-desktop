@@ -1,7 +1,7 @@
 package ui.edit;
 
+import data.model.KAWord;
 import data.model.Language;
-import data.model.Translation;
 import data.model.Word;
 import data.repositories.WordsRepository;
 import javafx.fxml.FXML;
@@ -9,6 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import ui.Navigation;
 import ui.common.DisplayController;
+import ui.common.OnWordSelectedListener;
 import ui.common.WordController;
 import utility.NodeUtility;
 
@@ -18,7 +19,8 @@ import java.util.Map;
 public class EditController {
     private Navigation navigation;
     private WordsRepository wordsRepository;
-    private DisplayController.OnDisplayChangedListener onWordSelectedListener;
+    private OnWordSelectedListener onActualWordSelectedListener;
+    private OnWordSelectedListener onTranslationSelectedListener;
 
     @FXML private AnchorPane paneLeft;
     @FXML private AnchorPane paneCenter;
@@ -97,14 +99,19 @@ public class EditController {
         private Language language;
 
         @Override
+        public void setOnWordSelectedListener(OnWordSelectedListener onWordSelectedListener) {
+
+        }
+
+        @Override
         public void addNewWord(String word) {
             navigation.showNewWordDialog(language, word);
         }
 
         @Override
         public void onWordChosen(Word word) {
-            if (onWordSelectedListener != null) {
-                onWordSelectedListener.onWordChanged(word);
+            if (onActualWordSelectedListener != null) {
+                onActualWordSelectedListener.onSelect(word);
             }
         }
 
@@ -128,8 +135,13 @@ public class EditController {
         private Language language;
 
         @Override
-        public void addNewWord(String word) {
+        public void setOnWordSelectedListener(OnWordSelectedListener onWordSelectedListener) {
+            onTranslationSelectedListener = onWordSelectedListener;
+        }
 
+        @Override
+        public void addNewWord(String word) {
+            navigation.showNewWordDialog(language, word);
         }
 
         @Override
@@ -139,25 +151,25 @@ public class EditController {
 
         @Override
         public List<Word> searchForWord(String word) {
-            return null;
+            return EditController.this.searchForWord(language, word);
         }
 
         @Override
         public List<Word> getAllWords() {
-            return null;
+            return EditController.this.getAllWords(language);
         }
 
         @Override
         public void onLanguageChanged(Language language) {
-
+            this.language = language;
         }
     }
 
     private class DisplayWordInteractionsListener implements DisplayController.DisplayInteractionListener {
 
         @Override
-        public void setOnDisplayChangedListener(DisplayController.OnDisplayChangedListener displayChangedListener) {
-            EditController.this.onWordSelectedListener = displayChangedListener;
+        public void setOnDisplayChangedListener(OnWordSelectedListener onWordSelectedListener) {
+            EditController.this.onActualWordSelectedListener = onWordSelectedListener;
         }
 
         @Override
@@ -171,8 +183,9 @@ public class EditController {
         }
 
         @Override
-        public void onTranslationSelected(Language language, Word word) {
-
+        public void onSelectTranslation(Word word) {
+            System.out.println("Selected translation: " + word);
+            onTranslationSelectedListener.onSelect(word);
         }
     }
 }

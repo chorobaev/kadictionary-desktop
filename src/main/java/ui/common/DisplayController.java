@@ -53,7 +53,7 @@ public class DisplayController extends BaseController {
             translations.keySet().forEach(language -> {
                 TranslationsNode node = new TranslationsNode(language);
                 node.setOnWordSelectedListener(word ->
-                    displayInteractionListener.onTranslationSelected(language, word)
+                    displayInteractionListener.onSelectTranslation(word)
                 );
                 node.setTranslations(translations.get(language));
                 accordionTranslations.getPanes().add(node);
@@ -63,17 +63,12 @@ public class DisplayController extends BaseController {
 
     public interface DisplayInteractionListener {
 
-        void setOnDisplayChangedListener(OnDisplayChangedListener displayChangedListener);
+        void setOnDisplayChangedListener(OnWordSelectedListener onWordSelectedListener);
 
         List<String> getDescriptionsByWord(Word word);
 
         Map<Language, List<Word>> getTranslationsByWord(Word word);
 
-        void onTranslationSelected(Language language, Word word);
-    }
-
-    public interface OnDisplayChangedListener {
-
-        void onWordChanged(Word word);
+        void onSelectTranslation(Word word);
     }
 }

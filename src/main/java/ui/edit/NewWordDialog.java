@@ -65,6 +65,7 @@ public class NewWordDialog extends Dialog<Boolean> {
             close();
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
+            navigation.showMessage("Бул сөз базада бар!");
         }
     }
 }

@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import utility.CommonUtility;
 import utility.NodeUtility;
@@ -30,6 +31,7 @@ public class WordController extends BaseController {
         initListView();
         initTextFieldSearch();
         initListView();
+        initInputs();
     }
 
     private void changeLanguage(Language language) {
@@ -70,6 +72,22 @@ public class WordController extends BaseController {
         }
     }
 
+    private void initInputs() {
+        interactionListener.setOnWordSelectedListener(word -> {
+            for (int i = 0; i < menuButtonLanguage.getItems().size(); i++) {
+                MenuItem menuItem = menuButtonLanguage.getItems().get(i);
+                Language language = (Language) menuItem.getUserData();
+                if (language == word.getLanguage()) {
+                    menuButtonLanguage.getItems().get(i).fire();
+                }
+            }
+
+            if (word.getId() != -1) {
+                textFieldWord.setText(word.getWord());
+            }
+        });
+    }
+
     private void onWordSelected(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
         try {
             Word word = words.get(newValue.intValue());
@@ -88,6 +106,8 @@ public class WordController extends BaseController {
     }
 
     public interface WordInteractionListener {
+
+        void setOnWordSelectedListener(OnWordSelectedListener onWordSelectedListener);
 
         void addNewWord(String word);
 

@@ -45,7 +45,7 @@ public class TranslationsNode extends TitledPane {
     private void onTranslationSelected(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
         try {
             if (onWordSelectedListener != null) {
-                onWordSelectedListener.onSelected(translations.get(newValue.intValue()));
+                onWordSelectedListener.onSelect(translations.get(newValue.intValue()));
             }
         } catch (ArrayIndexOutOfBoundsException ignored) {
             listViewWords.getSelectionModel().clearSelection();

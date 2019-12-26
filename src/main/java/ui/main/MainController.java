@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import base.BaseController;
 import ui.Navigation;
+import utility.NodeUtility;
 
 import java.util.List;
 import java.util.Map;
@@ -37,11 +38,7 @@ public class MainController extends BaseController {
         this.wordsRepository = wordsRepository;
         listViewWords.setItems(words);
         loadAllWords();
-    }
-
-    @FXML
-    void initialize() {
-        initLanguageMenuButton(menuButtonLanguage, this::changeLanguage);
+        NodeUtility.initLanguageMenuButton(menuButtonLanguage, this::changeLanguage);
         initWordsListView();
         initTextFieldSearch();
     }

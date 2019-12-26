@@ -3,6 +3,7 @@ package ui.common;
 import base.BaseController;
 import data.model.Language;
 import data.model.Word;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -33,9 +34,10 @@ public class WordController extends BaseController {
 
     public void init(WordInteractionListener interactionListener) {
         this.interactionListener = interactionListener;
-        listViewSuggestions.setItems(words);
         NodeUtility.initLanguageMenuButton(menuButtonLanguage, this::changeLanguage);
+        initListView();
         initTextFieldSearch();
+        initListView();
     }
 
     private void changeLanguage(Language language) {
@@ -44,30 +46,52 @@ public class WordController extends BaseController {
         }
     }
 
+    private void initListView() {
+        listViewSuggestions.setItems(words);
+        if (interactionListener != null) {
+            loadWords(interactionListener.getAllWords());
+        }
+        listViewSuggestions.getSelectionModel().selectedIndexProperty().addListener(this::onWordSelected);
+    }
+
     private void initTextFieldSearch() {
-        textFieldWord.textProperty().addListener(((observable, oldValue, newValue) -> {
-            searchForSuggestion(newValue);
-        }));
+        textFieldWord.textProperty().addListener(((observable, oldValue, newValue) -> searchForSuggestion(newValue)));
     }
 
     private void searchForSuggestion(String word) {
         this.words.clear();
         if (interactionListener != null) {
             List<Word> words = interactionListener.searchForWord(word);
-            if (words != null) {
-                this.words.addAll(words);
-                if (!words.isEmpty()) listViewSuggestions.getSelectionModel().select(0);
-            }
+            loadWords(words);
         }
     }
 
-    public static interface WordInteractionListener {
+    private void loadWords(List<Word> words) {
+        if (words != null) {
+            this.words.addAll(words);
+            if (!words.isEmpty()) listViewSuggestions.getSelectionModel().select(0);
+        }
+    }
+
+    private void onWordSelected(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+        try {
+            if (interactionListener != null) {
+                interactionListener.onWordChosen(words.get(newValue.intValue()));
+            }
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+            listViewSuggestions.getSelectionModel().clearSelection();
+        }
+    }
+
+    public interface WordInteractionListener {
 
         void addWordWithDescription(String word, String desc);
 
         void onWordChosen(Word word);
 
         List<Word> searchForWord(String word);
+
+        List<Word> getAllWords();
 
         void onLanguageChanged(Language language);
     }

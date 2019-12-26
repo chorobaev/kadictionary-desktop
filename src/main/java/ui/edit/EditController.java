@@ -53,6 +53,15 @@ public class EditController {
         NodeUtility.setAnchorsZero(right);
     }
 
+    private List<Word> getAllWords() {
+        List<Word> words = null;
+        try {
+            words = wordsRepository.getAllWords();
+        } catch (Exception ignored) {
+        }
+        return words;
+    }
+
     private class ActualWordInteractionListener implements WordController.WordInteractionListener {
 
         @Override
@@ -78,6 +87,11 @@ public class EditController {
         }
 
         @Override
+        public List<Word> getAllWords() {
+            return EditController.this.getAllWords();
+        }
+
+        @Override
         public void onLanguageChanged(Language language) {
             wordsRepository.changeLanguage(language);
         }
@@ -97,6 +111,11 @@ public class EditController {
 
         @Override
         public List<Word> searchForWord(String word) {
+            return null;
+        }
+
+        @Override
+        public List<Word> getAllWords() {
             return null;
         }
 

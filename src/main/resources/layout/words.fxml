@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.common.WordController">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+    <HBox>
+        <MenuButton fx:id="menuButtonLanguage" mnemonicParsing="false" prefWidth="1000.0" text="Тилди тандаңыз" HBox.hgrow="ALWAYS" />
+    </HBox>
+    <HBox>
+        <VBox.margin>
+            <Insets top="10.0" />
+        </VBox.margin>
+        <TextField fx:id="textFieldWord" promptText="Сөз" HBox.hgrow="ALWAYS" />
+    </HBox>
+    <ListView fx:id="listViewSuggestions" prefHeight="308.0" prefWidth="498.0" VBox.vgrow="ALWAYS">
+        <VBox.margin>
+            <Insets top="10.0" />
+        </VBox.margin>
+    </ListView>
+</VBox>

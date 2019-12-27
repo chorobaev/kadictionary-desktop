@@ -1,89 +1,145 @@
 package ui.main;
 
-import data.MySQLAccess;
+import base.BaseController;
 import data.model.Language;
 import data.model.Word;
+import data.repositories.WordsRepository;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import ui.Navigation;
+import utility.NodeUtility;
 
 import java.util.List;
+import java.util.Map;
 
-public class MainController {
+import static utility.CommonUtility.formatLanguageTranslations;
+import static utility.CommonUtility.formatListString;
+
+public class MainController extends BaseController {
+    private Navigation navigation;
+    private WordsRepository wordsRepository;
+    private Language language = Language.KYRGYZ;
+
     @FXML private TextField textFieldSearch;
-    @FXML private RadioButton radioBtnKyrgyz;
-    @FXML private ToggleGroup toggleGroupLanguages;
-    @FXML private RadioButton radioBtnArabic;
+    @FXML private MenuButton menuButtonLanguage;
     @FXML private ListView<Word> listViewWords;
+    @FXML private Label labelWord;
+    @FXML private Label labelDescription;
+    @FXML private Label labelArabicTranslation;
 
     private final ObservableList<Word> words = FXCollections.observableArrayList();
-    private MySQLAccess mySQLAccess;
+    private OnWordChosenListener onWordChosenListener = new OnWordChosenListener();
 
-    public void setMySQLAccess(MySQLAccess mySQLAccess) {
-        this.mySQLAccess = mySQLAccess;
+    public void init(Navigation navigation, WordsRepository wordsRepository) {
+        this.navigation = navigation;
+        this.wordsRepository = wordsRepository;
         listViewWords.setItems(words);
-        loadWords();
-        updateWordList();
+        loadAllWords();
+        NodeUtility.initLanguageMenuButton(menuButtonLanguage, this::changeLanguage);
+        initWordsListView();
+        initTextFieldSearch();
     }
 
-    @FXML
-    void initialize() {
-        radioBtnKyrgyz.setUserData(Language.KYRGYZ);
-        radioBtnArabic.setUserData(Language.ARABIC);
+    private void initWordsListView() {
+        listViewWords.getSelectionModel()
+            .selectedIndexProperty()
+            .addListener(onWordChosenListener);
     }
 
-    @FXML
-    void onLanguageChanged(ActionEvent event) {
-        choseLanguage();
-        loadWords();
-        updateWordList();
+    private void initTextFieldSearch() {
+        textFieldSearch.textProperty().addListener(((observable, oldValue, newValue) -> searchWords(newValue)));
     }
 
-    private void choseLanguage() {
-        if (mySQLAccess != null) {
-            Language language = (Language) toggleGroupLanguages.getSelectedToggle().getUserData();
-            mySQLAccess.setLanguage(language);
+    private void changeLanguage(Language language) {
+        this.language = language;
+        if (wordsRepository != null) {
+            loadAllWords();
         }
     }
 
-    private void loadWords() {
+    @FXML
+    void edit(ActionEvent event) {
+        navigation.showEditView();
+    }
+
+    @FXML
+    void quit(ActionEvent event) {
+        System.exit(0);
+    }
+
+    private void loadAllWords() {
         try {
-            if (mySQLAccess != null) {
-                mySQLAccess.loadAllWords();
+            this.words.clear();
+            if (wordsRepository != null) {
+                List<Word> words = wordsRepository.getAllWords(language);
+                if (words != null) {
+                    this.words.addAll(words);
+                    if (!words.isEmpty()) listViewWords.getSelectionModel().select(0);
+                }
+                System.out.println("Words: " + words);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    @FXML
-    void onSearchPressed(ActionEvent event) {
-        String word = textFieldSearch.getText();
-        searchWords(word);
-        updateWordList();
     }
 
     private void searchWords(String word) {
         try {
-            if (mySQLAccess != null) {
-                mySQLAccess.searchWord(word);
+            this.words.clear();
+            if (wordsRepository != null) {
+                List<Word> words = wordsRepository.searchWord(language, word);
+                if (word != null) this.words.addAll(words);
+                if (!words.isEmpty()) listViewWords.getSelectionModel().select(0);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private void updateWordList() {
-        words.clear();
-        if (mySQLAccess != null) {
-            List<Word> words = mySQLAccess.getWords();
-            if (words != null) this.words.addAll(mySQLAccess.getWords());
-            System.out.println("Words: " + words);
+    private class OnWordChosenListener implements ChangeListener<Number> {
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            try {
+                Word word = words.get(newValue.intValue());
+                labelWord.setText(word.getWord());
+                showDescriptions(word.getId());
+                showTranslations(word.getId());
+                System.out.println("Word '" + word + "' is selected");
+            } catch (ArrayIndexOutOfBoundsException ignored) {
+                listViewWords.getSelectionModel().clearSelection();
+            }
+        }
+
+        private void showDescriptions(int wordId) {
+            try {
+                if (wordsRepository != null) {
+                    List<String> descriptions = wordsRepository.getDescriptionByWordId(language, wordId);
+                    labelDescription.setText(formatListString(descriptions));
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        private void showTranslations(int wordId) {
+            try {
+                if (wordsRepository != null) {
+                    Map<Language, List<Word>> translations = wordsRepository.getTranslationsByWordId(language, wordId);
+                    System.out.println(translations.toString());
+                    labelArabicTranslation.setText(formatLanguageTranslations(translations));
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }

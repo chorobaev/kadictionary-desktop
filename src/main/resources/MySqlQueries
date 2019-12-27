@@ -1,8 +1,15 @@
 USE mysql;
 
-CREATE DATABASE kadictionary;
+CREATE DATABASE IF NOT EXISTS kadictionary;
 
 USE kadictionary;
+
+# Table dropping queries
+DROP TABLE IF EXISTS kyrgyz_arabic_word_matcher;
+DROP TABLE IF EXISTS kyrgyz_word_descriptions;
+DROP TABLE IF EXISTS arabic_word_descriptions;
+DROP TABLE IF EXISTS kyrgyz_words;
+DROP TABLE IF EXISTS arabic_words;
 
 # Table creating queries
 CREATE TABLE kyrgyz_words
@@ -12,6 +19,8 @@ CREATE TABLE kyrgyz_words
     correctness INT DEFAULT 0,
     CONSTRAINT PK_Kyrgyz_Word_ID PRIMARY KEY (wordID)
 );
+
+CREATE INDEX IndexKyrgyzWord ON kyrgyz_words (word);
 
 CREATE TABLE kyrgyz_word_descriptions
 (
@@ -32,6 +41,8 @@ CREATE TABLE arabic_words
     correctness INT DEFAULT 0,
     CONSTRAINT PK_Arabic_Word_ID PRIMARY KEY (wordID)
 );
+
+CREATE INDEX IndexArabicWord ON arabic_words (word);
 
 CREATE TABLE arabic_word_descriptions
 (
@@ -61,18 +72,119 @@ CREATE TABLE kyrgyz_arabic_word_matcher
     CONSTRAINT UNIQUE (_kyrgyzWordID, _arabicWordID)
 );
 
-# Table dropping queries
-DROP TABLE kyrgyz_arabic_word_matcher;
-DROP TABLE kyrgyz_word_descriptions;
-DROP TABLE arabic_word_descriptions;
-DROP TABLE kyrgyz_words;
-DROP TABLE arabic_words;
-SHOW TABLES;
+#Auth tables
+CREATE TABLE `users`
+(
+    userID   INT           NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name     NVARCHAR(100) NOT NULL,
+    surname  NVARCHAR(100) NOT NULL,
+    email    VARCHAR(100)  NOT NULL UNIQUE,
+    password VARCHAR(100)  NOT NULL
+);
 
 # Data inserting queries
 INSERT INTO kyrgyz_words (word) VALUE ('китеп');
 INSERT INTO kyrgyz_word_descriptions (description, _wordID)
-VALUES ('окуу үчүн даярдалган, барактардын топтомунан турган кандайдыр бир типографиялык басылма', 1)
+VALUES ('окуу үчүн даярдалган, барактардын топтомунан турган кандайдыр бир типографиялык басылма', 1);
+
+INSERT INTO kyrgyz_words (word) VALUE ('апа');
+INSERT INTO kyrgyz_word_descriptions (description, _wordID)
+VALUES ('', 2);
+
+INSERT INTO kyrgyz_words (word) VALUE ('бала');
+
+INSERT INTO arabic_words (word)
+VALUES ('الكتاب');
+INSERT INTO arabic_word_descriptions (description, _wordID)
+VALUES ('كِتابُ وجمعه كُتبُ هي أوعية المعلومات غير الدورية والتي بطبيعة محتوياتها وتنظيمها وضعت لتُقرأ من أولها لآخرها في تتابع منطقي ولكل منها عنوان محدد حتى ولو صدرت مجمعة تحت سلسلة ما',
+        1);
+
+INSERT INTO kyrgyz_arabic_word_matcher (_kyrgyzWordID, _arabicWordID)
+VALUES (1, 1);
+
+##### Auth procedures
+CREATE PROCEDURE createUser(newEmail VARCHAR(100), newPassword VARCHAR(100),
+                            newName NVARCHAR(100), newSurname NVARCHAR(100))
+BEGIN
+    INSERT INTO `users` (`email`, `password`, `name`, `surname`)
+    VALUES (newEmail, newPassword, newName, newSurname);
+END;
+
+CREATE PROCEDURE getUserByEmailAndPassword(userEmail VARCHAR(100), userPassword VARCHAR(100))
+BEGIN
+    SELECT * FROM `users` WHERE email = userEmail AND password = userPassword;
+END;
+
+##### Data selecting stored procedures
+
+CREATE PROCEDURE getAllKyrgyzWords()
+BEGIN
+    SELECT *
+    FROM kyrgyz_words
+    ORDER BY word;
+END;
+
+CREATE PROCEDURE getAllArabicWords()
+BEGIN
+    SELECT *
+    FROM arabic_words
+    ORDER BY word;
+END;
+
+CREATE PROCEDURE searchKyrgyzWord(beginning NVARCHAR(200))
+BEGIN
+    SELECT *
+    FROM kyrgyz_words
+    WHERE word LIKE CONCAT(beginning, '%')
+    ORDER BY word;
+END;
+
+CREATE PROCEDURE searchArabicWord(beginning NVARCHAR(200))
+BEGIN
+    SELECT *
+    FROM arabic_words
+    WHERE word LIKE CONCAT(beginning, '%')
+    ORDER BY word;
+END;
+
+CREATE PROCEDURE getKyrgyzWordDescriptionsByWordId(kyrgyzWordId INT)
+BEGIN
+    SELECT description
+    FROM kyrgyz_word_descriptions
+    WHERE _wordID = kyrgyzWordId
+    ORDER BY correctness;
+END;
+
+CREATE PROCEDURE getArabicWordDescriptionsByWordId(arabicWordId INT)
+BEGIN
+    SELECT description
+    FROM arabic_word_descriptions
+    WHERE _wordID = arabicWordId
+    ORDER BY correctness;
+END;
+
+CREATE PROCEDURE getKyrgyzWordArabicTranslationsByWordId(kyrgyzWordId INT)
+BEGIN
+    SELECT aw.word AS translation
+    FROM kyrgyz_arabic_word_matcher kawm
+             JOIN arabic_words aw
+                  ON kawm._kyrgyzWordID = aw.wordID
+    WHERE kawm._kyrgyzWordID = kyrgyzWordId
+    ORDER BY kawm.correctness;
+END;
+
+CREATE PROCEDURE getArabicWordKyrgyzTranslationsByWordId(arabicWordId INT)
+BEGIN
+    SELECT kw.word AS translation
+    FROM kyrgyz_arabic_word_matcher kawm
+             JOIN kyrgyz_words kw
+                  ON kawm._kyrgyzWordID = kw.wordID
+    WHERE kawm._kyrgyzWordID = arabicWordId
+    ORDER BY kawm.correctness;
+END;
+
+##### Data inserting stored procedures
+
 
 # Data selecting queries
 SELECT *
@@ -85,31 +197,19 @@ SELECT *
 FROM arabic_word_descriptions;
 SELECT *
 FROM kyrgyz_arabic_word_matcher;
+SELECT * FROM users;
 
-# Data manipulating stored procedures
-CREATE PROCEDURE getAllKyrgyzWords()
-BEGIN
-    SELECT wordID, word, description, kd.correctness
-    FROM kyrgyz_words kw
-             JOIN kyrgyz_word_descriptions kd on kw.wordID = kd._wordID;
-END;
-
-CREATE PROCEDURE getAllArabicWords()
-BEGIN
-    SELECT wordID, word, description, ad.correctness
-    FROM arabic_words aw
-             JOIN arabic_word_descriptions ad on aw.wordID = ad._wordID;
-END;
-
-CREATE PROCEDURE searchKyrgyzWord(beginning NVARCHAR(200))
-BEGIN
-    SELECT *
-    FROM kyrgyz_words
-    WHERE word LIKE CONCAT(beginning, '%')
-    ORDER BY word;
-END;
 
 # Driving code
-CALL getAllKyrgyzWordsWithDescriptionAndCorrectness();
+CALL createUser('Nurbol', 'hello1', 'Nurbol', 'Chorobaev');
 CALL searchKyrgyzWord('ки');
 SHOW PROCEDURE STATUS;
+CALL getUserByEmailAndPassword('Nurbol', 'hello1');
+CALL getKyrgyzWordDescriptionsByWordId(1);
+CALL getAllKyrgyzWords();
+DROP PROCEDURE getAllKyrgyzWords;
+DROP PROCEDURE getKyrgyzWordDescriptionsByWordId;
+DROP PROCEDURE getArabicWordDescriptionsByWordId;
+DROP PROCEDURE getAllArabicWords;
+DROP PROCEDURE getKyrgyzWordDescriptionsByWordId;
+DROP PROCEDURE getArabicWordKyrgyzTranslationsByWordId;
